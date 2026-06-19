@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-auto-broadcast",
+  "version": "1.0.0",
+  "description": "WhatsApp Auto-Message Broadcast Scheduler System",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "backend": "npm start --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "dev": "npx concurrently --kill-others \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "build": "npm run build --prefix frontend",
+    "start": "cross-env NODE_ENV=production node backend/server.js"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
+  }
+}

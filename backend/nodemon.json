@@ -1,0 +1,11 @@
+{
+  "ignore": [
+    "database.sqlite",
+    "database.sqlite-journal",
+    "database.sqlite-wal",
+    "database.sqlite-shm",
+    "auth/**",
+    "node_modules/**"
+  ],
+  "ext": "js,json"
+}
