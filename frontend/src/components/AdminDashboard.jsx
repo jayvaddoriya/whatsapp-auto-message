@@ -1072,7 +1072,6 @@ export default function AdminDashboard({
                         value={formFields.broadcast_jid}
                         onChange={handleInputChange}
                         required
-                        disabled={editingSchedule !== null}
                       >
                         <option value="">{t('chooseBroadcast')}</option>
                         {broadcasts.map((list) => (
@@ -1334,7 +1333,6 @@ export default function AdminDashboard({
                             
                             <td style={{ textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
-                                {schedule.status !== 'sent' && (
                                   <button 
                                     onClick={() => startEditSchedule(schedule)}
                                     className="btn-icon"
@@ -1343,7 +1341,6 @@ export default function AdminDashboard({
                                   >
                                     <Edit2 size={13} />
                                   </button>
-                                )}
 
                                 <button
                                   onClick={() => handleSendImmediately(schedule.id)}

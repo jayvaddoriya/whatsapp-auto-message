@@ -500,10 +500,10 @@ app.post('/api/schedules', authenticateToken, async (req, res) => {
 
 app.put('/api/schedules/:id', authenticateToken, async (req, res) => {
   const scheduleId = req.params.id;
-  const { message, schedule_date, schedule_time, period } = req.body;
+  const { broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period } = req.body;
 
-  if (!message || !schedule_date || !schedule_time || !period) {
-    return res.status(400).json({ error: 'Message, date, time and period are required.' });
+  if (!broadcast_jid || !broadcast_name || !message || !schedule_date || !schedule_time || !period) {
+    return res.status(400).json({ error: 'All schedule details (broadcast list, message, date, time, period) are required.' });
   }
 
   try {
@@ -522,9 +522,9 @@ app.put('/api/schedules/:id', authenticateToken, async (req, res) => {
     // Reset status to pending so it evaluates next_run_at again
     await db.run(
       `UPDATE schedules 
-       SET message = ?, schedule_date = ?, schedule_time = ?, period = ?, status = 'pending', next_run_at = ?, error_message = NULL 
+       SET broadcast_jid = ?, broadcast_name = ?, message = ?, schedule_date = ?, schedule_time = ?, period = ?, status = 'pending', next_run_at = ?, error_message = NULL 
        WHERE id = ? AND admin_id = ?`,
-      [message, schedule_date, schedule_time, period, nextRunAtISO, scheduleId, req.user.id]
+      [broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period, nextRunAtISO, scheduleId, req.user.id]
     );
 
     res.json({ message: 'Schedule updated successfully.', next_run_at: nextRunAtISO });
