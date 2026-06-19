@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   QrCode, Calendar, Clock, Send, Trash2, Edit2, Play, CheckCircle, 
-  XCircle, AlertCircle, LogOut, MessageSquare, RefreshCw, Layers, Plus, X
+  XCircle, AlertCircle, LogOut, MessageSquare, RefreshCw, Layers, Plus, X, Search
 } from 'lucide-react';
 import { HeaderControls } from '../App';
 
@@ -27,6 +27,7 @@ export default function AdminDashboard({
 
   // Custom Lists Manager states
   const [customLists, setCustomLists] = useState([]);
+  const [customListSearch, setCustomListSearch] = useState('');
   const [loadingCustom, setLoadingCustom] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customNumbersText, setCustomNumbersText] = useState('');
@@ -41,6 +42,7 @@ export default function AdminDashboard({
 
   // Schedules state
   const [schedules, setSchedules] = useState([]);
+  const [scheduleSearch, setScheduleSearch] = useState('');
   const [loadingSchedules, setLoadingSchedules] = useState(true);
   const [schedulesError, setSchedulesError] = useState('');
 
@@ -144,11 +146,11 @@ export default function AdminDashboard({
 
   // Fetch detailed custom broadcast lists
   const [fetchingCustomListsInProgress, setFetchingCustomListsInProgress] = useState(false);
-  const fetchCustomLists = async () => {
+  const fetchCustomLists = async (search = '') => {
     setLoadingCustom(true);
     setCustomError('');
     try {
-      const response = await fetch(`${API_BASE}/api/custom-broadcasts`, {
+      const response = await fetch(`${API_BASE}/api/custom-broadcasts?search=${encodeURIComponent(search)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -282,11 +284,11 @@ export default function AdminDashboard({
   };
 
   // Fetch schedules
-  const fetchSchedules = async () => {
+  const fetchSchedules = async (search = '') => {
     setLoadingSchedules(true);
     setSchedulesError('');
     try {
-      const response = await fetch(`${API_BASE}/api/schedules`, {
+      const response = await fetch(`${API_BASE}/api/schedules?search=${encodeURIComponent(search)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -302,11 +304,9 @@ export default function AdminDashboard({
   // Poll WhatsApp status regularly & load initial data
   useEffect(() => {
     fetchWaStatus();
-    fetchSchedules();
     fetchBroadcasts();
-    fetchCustomLists();
     fetchContacts();
-
+    
     pollingRef.current = setInterval(() => {
       fetchWaStatus();
     }, 3000);
@@ -315,6 +315,24 @@ export default function AdminDashboard({
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, [token]);
+
+  // Debounced search trigger for Schedules
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSchedules(scheduleSearch);
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [scheduleSearch, token]);
+
+  // Debounced search trigger for Custom Lists
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchCustomLists(customListSearch);
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [customListSearch, token]);
 
   // Fetch broadcast lists and contacts when WhatsApp transitions to connected
   useEffect(() => {
@@ -837,6 +855,30 @@ export default function AdminDashboard({
                 </button>
               </div>
 
+              {/* Search Bar */}
+              <div style={{ marginBottom: '1rem', position: 'relative' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder={t('searchCustomLists')}
+                  value={customListSearch}
+                  onChange={(e) => setCustomListSearch(e.target.value)}
+                  style={{ paddingLeft: '2.5rem' }}
+                />
+                <span style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  pointerEvents: 'none'
+                }}>
+                  <Search size={18} />
+                </span>
+              </div>
+
               <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                 {loadingCustom ? (
                   <div style={{ padding: '3rem', textAlign: 'center' }}>
@@ -1105,7 +1147,7 @@ export default function AdminDashboard({
                   <p style={{ fontSize: '0.85rem' }}>{t('schedulesDesc')}</p>
                 </div>
                 <button onClick={fetchSchedules} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'var(--color-border)' }} title="Refresh List">
-                  <RefreshCw size={14} />
+                  <RefreshCw size={14} style={{ color: 'var(--accent-teal)' }}/>
                 </button>
               </div>
 
@@ -1124,6 +1166,30 @@ export default function AdminDashboard({
                   <span>{schedulesError}</span>
                 </div>
               )}
+
+              {/* Search Bar */}
+              <div style={{ marginBottom: '1rem', position: 'relative' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder={t('searchSchedules')}
+                  value={scheduleSearch}
+                  onChange={(e) => setScheduleSearch(e.target.value)}
+                  style={{ paddingLeft: '2.5rem' }}
+                />
+                <span style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  pointerEvents: 'none'
+                }}>
+                  <Search size={18} />
+                </span>
+              </div>
 
               <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                 {loadingSchedules ? (

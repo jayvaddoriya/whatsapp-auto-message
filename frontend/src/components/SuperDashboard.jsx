@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   UserPlus, Edit2, Trash2, Power, PowerOff, Shield, Users, CheckCircle, 
-  XCircle, LogOut, Mail, Lock, User, AlertCircle, X 
+  XCircle, LogOut, Mail, Lock, User, AlertCircle, X, Search 
 } from 'lucide-react';
 import { HeaderControls } from '../App';
 
@@ -11,6 +11,7 @@ export default function SuperDashboard({
   token, user, onLogout, t, lang, theme, toggleLang, toggleTheme 
 }) {
   const [admins, setAdmins] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -30,11 +31,11 @@ export default function SuperDashboard({
   const [submitting, setSubmitting] = useState(false);
 
   // Fetch all admins
-  const fetchAdmins = async () => {
+  const fetchAdmins = async (search = '') => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE}/api/super/admins`, {
+      const response = await fetch(`${API_BASE}/api/super/admins?search=${encodeURIComponent(search)}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -49,9 +50,14 @@ export default function SuperDashboard({
     }
   };
 
+  // Debounced search trigger
   useEffect(() => {
-    fetchAdmins();
-  }, [token]);
+    const delayDebounce = setTimeout(() => {
+      fetchAdmins(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, token]);
 
   // Handle Form Change
   const handleInputChange = (e) => {
@@ -326,6 +332,30 @@ export default function SuperDashboard({
             <span>{error}</span>
           </div>
         )}
+
+        {/* Search Bar */}
+        <div style={{ marginBottom: '1rem', position: 'relative' }}>
+          <input
+            type="text"
+            className="form-input"
+            placeholder={t('searchAdmins')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ paddingLeft: '2.5rem' }}
+          />
+          <span style={{
+            position: 'absolute',
+            left: '1rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--text-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            pointerEvents: 'none'
+          }}>
+            <Search size={18} />
+          </span>
+        </div>
 
         {/* Admins Table */}
         <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>

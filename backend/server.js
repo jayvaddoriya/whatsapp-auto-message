@@ -106,9 +106,16 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 // ==========================================
 
 app.get('/api/super/admins', authenticateToken, requireRole('super_admin'), async (req, res) => {
+  const { search } = req.query;
   try {
-    // List all admins, excluding their passwords, order by creation
-    const adminsList = await db.all("SELECT id, name, email, enabled, role, created_at FROM admins ORDER BY id DESC");
+    let sql = "SELECT id, name, email, enabled, role, created_at FROM admins";
+    let params = [];
+    if (search) {
+      sql += " WHERE name LIKE ? OR email LIKE ?";
+      params.push(`%${search}%`, `%${search}%`);
+    }
+    sql += " ORDER BY id DESC";
+    const adminsList = await db.all(sql, params);
     res.json(adminsList);
   } catch (err) {
     console.error('List admins error:', err);
@@ -310,16 +317,20 @@ app.get('/api/whatsapp/contacts', authenticateToken, async (req, res) => {
 // ==========================================
 
 app.get('/api/custom-broadcasts', authenticateToken, async (req, res) => {
+  const { search } = req.query;
   try {
-    const lists = await db.all(
-      `SELECT cb.id, cb.name, COUNT(cbn.id) AS recipient_count, cb.created_at
+    let sql = `
+       SELECT cb.id, cb.name, COUNT(cbn.id) AS recipient_count, cb.created_at
        FROM custom_broadcasts cb
        LEFT JOIN custom_broadcast_numbers cbn ON cb.id = cbn.broadcast_id
-       WHERE cb.admin_id = ?
-       GROUP BY cb.id
-       ORDER BY cb.id DESC`,
-      [req.user.id]
-    );
+       WHERE cb.admin_id = ?`;
+    let params = [req.user.id];
+    if (search) {
+      sql += " AND cb.name LIKE ?";
+      params.push(`%${search}%`);
+    }
+    sql += " GROUP BY cb.id ORDER BY cb.id DESC";
+    const lists = await db.all(sql, params);
     
     // For each list, load its phone numbers
     for (let list of lists) {
@@ -397,11 +408,16 @@ app.delete('/api/custom-broadcasts/:id', authenticateToken, async (req, res) => 
 // ==========================================
 
 app.get('/api/schedules', authenticateToken, async (req, res) => {
+  const { search } = req.query;
   try {
-    const schedulesList = await db.all(
-      `SELECT * FROM schedules WHERE admin_id = ? ORDER BY id DESC`,
-      [req.user.id]
-    );
+    let sql = "SELECT * FROM schedules WHERE admin_id = ?";
+    let params = [req.user.id];
+    if (search) {
+      sql += " AND (broadcast_name LIKE ? OR broadcast_jid LIKE ? OR message LIKE ?)";
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+    sql += " ORDER BY id DESC";
+    const schedulesList = await db.all(sql, params);
     res.json(schedulesList);
   } catch (err) {
     console.error('Get schedules error:', err);
