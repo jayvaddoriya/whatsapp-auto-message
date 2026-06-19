@@ -403,6 +403,45 @@ app.delete('/api/custom-broadcasts/:id', authenticateToken, async (req, res) => 
   }
 });
 
+app.put('/api/custom-broadcasts/:id', authenticateToken, async (req, res) => {
+  const listId = req.params.id;
+  const { name, numbers } = req.body;
+
+  if (!name || !numbers || !Array.isArray(numbers)) {
+    return res.status(400).json({ error: 'Name and numbers array are required.' });
+  }
+
+  try {
+    // 1. Verify ownership
+    const list = await db.get("SELECT id FROM custom_broadcasts WHERE id = ? AND admin_id = ?", [listId, req.user.id]);
+    if (!list) {
+      return res.status(404).json({ error: 'Custom list not found.' });
+    }
+
+    // 2. Update custom_broadcasts name
+    await db.run("UPDATE custom_broadcasts SET name = ? WHERE id = ?", [name, listId]);
+
+    // 3. Clear old numbers
+    await db.run("DELETE FROM custom_broadcast_numbers WHERE broadcast_id = ?", [listId]);
+
+    // 4. Insert new numbers
+    for (let number of numbers) {
+      const cleanNum = number.replace(/\D/g, '');
+      if (cleanNum) {
+        await db.run(
+          "INSERT INTO custom_broadcast_numbers (broadcast_id, phone_number) VALUES (?, ?)",
+          [listId, cleanNum]
+        );
+      }
+    }
+
+    res.json({ message: 'Custom broadcast list updated successfully.' });
+  } catch (err) {
+    console.error('Update custom broadcast error:', err);
+    res.status(500).json({ error: 'Failed to update custom broadcast list.' });
+  }
+});
+
 // ==========================================
 // 4. Admin - Schedules Management Endpoints
 // ==========================================

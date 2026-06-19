@@ -29,6 +29,7 @@ export default function AdminDashboard({
   const [customLists, setCustomLists] = useState([]);
   const [customListSearch, setCustomListSearch] = useState('');
   const [loadingCustom, setLoadingCustom] = useState(false);
+  const [editingCustomList, setEditingCustomList] = useState(null);
   const [customName, setCustomName] = useState('');
   const [customNumbersText, setCustomNumbersText] = useState('');
   const [submittingCustom, setSubmittingCustom] = useState(false);
@@ -214,6 +215,21 @@ export default function AdminDashboard({
     setSelectedNumbers(prev => prev.filter(num => !allFilteredNums.includes(num)));
   };
 
+  // Load custom list for editing
+  const startEditCustomList = (list) => {
+    setEditingCustomList(list);
+    setCustomName(list.name);
+    setCustomNumbersText(list.numbers.join('\n'));
+  };
+
+  // Cancel custom list editing
+  const cancelEditCustomList = () => {
+    setEditingCustomList(null);
+    setCustomName('');
+    setCustomNumbersText('');
+    setCustomError('');
+  };
+
   // Create a new custom list
   const handleCreateCustomList = async (e) => {
     e.preventDefault();
@@ -231,8 +247,13 @@ export default function AdminDashboard({
 
     setSubmittingCustom(true);
     try {
-      const response = await fetch(`${API_BASE}/api/custom-broadcasts`, {
-        method: 'POST',
+      const url = editingCustomList 
+        ? `${API_BASE}/api/custom-broadcasts/${editingCustomList.id}`
+        : `${API_BASE}/api/custom-broadcasts`;
+      const method = editingCustomList ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -244,14 +265,18 @@ export default function AdminDashboard({
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to create list.');
+      if (!response.ok) throw new Error(data.error || 'Failed to save list.');
 
       setCustomName('');
       setCustomNumbersText('');
+      setEditingCustomList(null);
       
       fetchCustomLists();
       fetchBroadcasts();
-      alert(lang === 'en' ? 'Custom broadcast list created successfully!' : 'કસ્ટમ બ્રોડકાસ્ટ યાદી સફળતાપૂર્વક બનાવવામાં આવી છે!');
+      alert(editingCustomList
+        ? (lang === 'en' ? 'Custom broadcast list updated successfully!' : 'કસ્ટમ બ્રોડકાસ્ટ યાદી સફળતાપૂર્વક અપડેટ કરવામાં આવી છે!')
+        : (lang === 'en' ? 'Custom broadcast list created successfully!' : 'કસ્ટમ બ્રોડકાસ્ટ યાદી સફળતાપૂર્વક બનાવવામાં આવી છે!')
+      );
     } catch (err) {
       setCustomError(err.message);
     } finally {
@@ -782,8 +807,8 @@ export default function AdminDashboard({
             <div className="sidebar-card">
               <div className="glass-card">
                 <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Plus size={18} style={{ color: 'var(--accent-teal)' }} />
-                  {t('createCustomTitle')}
+                  {editingCustomList ? <Edit2 size={18} style={{ color: 'var(--accent-teal)' }} /> : <Plus size={18} style={{ color: 'var(--accent-teal)' }} />}
+                  {editingCustomList ? t('editCustomTitle') : t('createCustomTitle')}
                 </h3>
 
                 {customError && (
@@ -832,13 +857,25 @@ export default function AdminDashboard({
                     </span>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-full"
-                    disabled={submittingCustom}
-                  >
-                    {submittingCustom ? '...' : t('createListBtn')}
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                    {editingCustomList && (
+                      <button
+                        type="button"
+                        onClick={cancelEditCustomList}
+                        className="btn btn-secondary w-full"
+                        disabled={submittingCustom}
+                      >
+                        {t('cancel')}
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-full"
+                      disabled={submittingCustom}
+                    >
+                      {submittingCustom ? '...' : (editingCustomList ? t('updateListBtn') : t('createListBtn'))}
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
@@ -937,13 +974,23 @@ export default function AdminDashboard({
                               {new Date(list.created_at).toLocaleDateString()}
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                              <button
-                                onClick={() => handleDeleteCustomList(list.id)}
-                                className="btn-icon btn-danger"
-                                title="Delete Custom List"
-                              >
-                                <Trash2 size={13} />
-                              </button>
+                              <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => startEditCustomList(list)}
+                                  className="btn-icon"
+                                  style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'var(--color-border)', color: 'var(--text-primary)' }}
+                                  title="Edit Custom List"
+                                >
+                                  <Edit2 size={13} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCustomList(list.id)}
+                                  className="btn-icon btn-danger"
+                                  title="Delete Custom List"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
