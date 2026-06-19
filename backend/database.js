@@ -132,6 +132,18 @@ const initDB = async () => {
     )
   `);
 
+  // Create WhatsApp Messages table
+  await run(`
+    CREATE TABLE IF NOT EXISTS whatsapp_messages (
+      msg_id TEXT PRIMARY KEY,
+      admin_id INTEGER,
+      remote_jid TEXT NOT NULL,
+      message_json TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(admin_id) REFERENCES admins(id) ON DELETE CASCADE
+    )
+  `);
+
   // Seed default super admin if none exists
   const superAdmin = await get("SELECT * FROM admins WHERE role = 'super_admin'");
   if (!superAdmin) {
