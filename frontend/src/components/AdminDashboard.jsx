@@ -888,7 +888,7 @@ export default function AdminDashboard({
                   <p style={{ fontSize: '0.85rem' }}>{t('customListsDesc')}</p>
                 </div>
                 <button onClick={fetchCustomLists} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'var(--color-border)' }}>
-                  <RefreshCw size={14} />
+                  <RefreshCw size={14} style={{ color: 'var(--accent-teal)' }}/>
                 </button>
               </div>
 
