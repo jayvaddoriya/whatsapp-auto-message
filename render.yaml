@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: whatsapp-auto-broadcast-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DATA_DIR
+        value: /var/lib/whatsapp-data
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: whatsapp-persistence
+      mountPath: /var/lib/whatsapp-data
+      sizeGB: 1

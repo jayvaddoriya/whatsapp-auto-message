@@ -25,7 +25,10 @@ const getRetryCache = (adminId) => {
 
 // Ensure auth directories exist
 const getAuthFolderPath = (adminId) => {
-  const folderPath = path.resolve(__dirname, 'auth', `admin_${adminId}`);
+  const baseDir = process.env.DATA_DIR 
+    ? path.resolve(process.env.DATA_DIR, 'auth')
+    : path.resolve(__dirname, 'auth');
+  const folderPath = path.resolve(baseDir, `admin_${adminId}`);
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true });
   }
