@@ -400,13 +400,19 @@ export default function AdminDashboard({
     setSubmittingSchedule(true);
     try {
       const selectedList = broadcasts.find(b => b.jid === formFields.broadcast_jid);
+      
+      // Calculate exact UTC ISO string from client timezone
+      const localDate = new Date(`${formFields.schedule_date}T${formFields.schedule_time}`);
+      const nextRunAtUTC = isNaN(localDate.getTime()) ? null : localDate.toISOString();
+
       const payload = {
         broadcast_jid: formFields.broadcast_jid,
         broadcast_name: selectedList ? selectedList.name : 'Unknown Broadcast',
         message: formFields.message,
         schedule_date: formFields.schedule_date,
         schedule_time: formFields.schedule_time,
-        period: formFields.period
+        period: formFields.period,
+        next_run_at: nextRunAtUTC
       };
 
       const url = editingSchedule 

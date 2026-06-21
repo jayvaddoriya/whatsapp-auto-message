@@ -478,12 +478,16 @@ app.post('/api/schedules', authenticateToken, async (req, res) => {
 
   try {
     // Compute the next_run_at timestamp based on local date/time input
-    // The format is YYYY-MM-DD and HH:MM
-    const localDateTime = new Date(`${schedule_date}T${schedule_time}`);
-    if (isNaN(localDateTime.getTime())) {
-      return res.status(400).json({ error: 'Invalid schedule date or time format.' });
+    let nextRunAtISO;
+    if (req.body.next_run_at) {
+      nextRunAtISO = req.body.next_run_at;
+    } else {
+      const localDateTime = new Date(`${schedule_date}T${schedule_time}`);
+      if (isNaN(localDateTime.getTime())) {
+        return res.status(400).json({ error: 'Invalid schedule date or time format.' });
+      }
+      nextRunAtISO = localDateTime.toISOString();
     }
-    const nextRunAtISO = localDateTime.toISOString();
 
     const result = await db.run(
       `INSERT INTO schedules 
@@ -518,11 +522,16 @@ app.put('/api/schedules/:id', authenticateToken, async (req, res) => {
     }
 
     // Recompute next_run_at based on new schedule
-    const localDateTime = new Date(`${schedule_date}T${schedule_time}`);
-    if (isNaN(localDateTime.getTime())) {
-      return res.status(400).json({ error: 'Invalid date or time format.' });
+    let nextRunAtISO;
+    if (req.body.next_run_at) {
+      nextRunAtISO = req.body.next_run_at;
+    } else {
+      const localDateTime = new Date(`${schedule_date}T${schedule_time}`);
+      if (isNaN(localDateTime.getTime())) {
+        return res.status(400).json({ error: 'Invalid date or time format.' });
+      }
+      nextRunAtISO = localDateTime.toISOString();
     }
-    const nextRunAtISO = localDateTime.toISOString();
 
     // Reset status to pending so it evaluates next_run_at again
     await db.run(
