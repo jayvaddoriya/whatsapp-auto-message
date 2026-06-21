@@ -25,9 +25,20 @@ const getRetryCache = (adminId) => {
 
 // Ensure auth directories exist
 const getAuthFolderPath = (adminId) => {
-  const baseDir = process.env.DATA_DIR 
-    ? path.resolve(process.env.DATA_DIR, 'auth')
-    : path.resolve(__dirname, 'auth');
+  let baseDir;
+  try {
+    if (process.env.DATA_DIR) {
+      baseDir = path.resolve(process.env.DATA_DIR, 'auth');
+      if (!fs.existsSync(baseDir)) {
+        fs.mkdirSync(baseDir, { recursive: true });
+      }
+    } else {
+      baseDir = path.resolve(__dirname, 'auth');
+    }
+  } catch (err) {
+    console.warn(`[Storage Warning] Failed to create auth folder in DATA_DIR. Falling back to local directory. Error:`, err.message);
+    baseDir = path.resolve(__dirname, 'auth');
+  }
   const folderPath = path.resolve(baseDir, `admin_${adminId}`);
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true });

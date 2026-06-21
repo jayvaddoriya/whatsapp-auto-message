@@ -3,14 +3,20 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 
-const dbPath = process.env.DATA_DIR 
-  ? path.resolve(process.env.DATA_DIR, 'database.sqlite')
-  : path.resolve(__dirname, 'database.sqlite');
-
-// Ensure parent directory exists
-const dbDir = path.dirname(dbPath);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+let dbPath;
+try {
+  if (process.env.DATA_DIR) {
+    const dbDir = path.resolve(process.env.DATA_DIR);
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    dbPath = path.resolve(dbDir, 'database.sqlite');
+  } else {
+    dbPath = path.resolve(__dirname, 'database.sqlite');
+  }
+} catch (err) {
+  console.warn(`[Storage Warning] Failed to initialize DATA_DIR (${process.env.DATA_DIR}). Falling back to local directory. Error:`, err.message);
+  dbPath = path.resolve(__dirname, 'database.sqlite');
 }
 
 const db = new sqlite3.Database(dbPath);
