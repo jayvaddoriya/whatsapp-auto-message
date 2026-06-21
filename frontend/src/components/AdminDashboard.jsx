@@ -1104,12 +1104,7 @@ export default function AdminDashboard({
                   </div>
 
                   {/* Date & Time Picker */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '1rem',
-                    marginBottom: '1.25rem'
-                  }}>
+                  <div className="schedule-datetime-grid">
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         <Calendar size={14} /> {t('dateLabel')}
@@ -1165,7 +1160,7 @@ export default function AdminDashboard({
                   </div>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.75rem' }}>
+                  <div className="schedule-actions">
                     {editingSchedule && (
                       <button 
                         type="button" 
