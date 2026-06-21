@@ -593,12 +593,18 @@ app.post('/api/schedules/:id/send-now', authenticateToken, async (req, res) => {
 });
 
 const path = require('path');
+const fs = require('fs');
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Serve static assets in production if they exist locally
+const staticPath = path.join(__dirname, '../frontend/dist');
+if (process.env.NODE_ENV === 'production' && fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+    res.sendFile(path.resolve(staticPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({ status: 'healthy', message: 'WhatsApp Auto-Broadcast API Server' });
   });
 }
 
