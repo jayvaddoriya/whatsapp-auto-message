@@ -111,7 +111,7 @@ export default function Login({ onLoginSuccess, t }) {
                 left: '1rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'var(--text-muted)',
+                color: 'var(--text-secondary)',
                 display: 'flex',
                 alignItems: 'center'
               }}>
@@ -138,7 +138,7 @@ export default function Login({ onLoginSuccess, t }) {
                 left: '1rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'var(--text-muted)',
+                color: 'var(--text-secondary)',
                 display: 'flex',
                 alignItems: 'center'
               }}>

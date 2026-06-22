@@ -22,16 +22,7 @@ export function HeaderControls({ lang, theme, toggleLang, toggleTheme }) {
       {/* Theme Toggle Button */}
       <button 
         onClick={toggleTheme} 
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text-primary)',
-          display: 'flex',
-          padding: '0.2rem',
-          borderRadius: '50%',
-          transition: 'background var(--transition-fast)'
-        }}
+        className="header-control-btn"
         title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
         {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -43,19 +34,7 @@ export function HeaderControls({ lang, theme, toggleLang, toggleTheme }) {
       {/* Language Toggle Button */}
       <button 
         onClick={toggleLang}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text-primary)',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.25rem',
-          padding: '0.2rem 0.4rem',
-          fontFamily: 'inherit'
-        }}
+        className="header-control-btn-lang"
         title="Toggle Language / ભાષા બદલો"
       >
         <Globe size={13} style={{ color: 'var(--accent-teal)' }} />

@@ -913,7 +913,7 @@ export default function AdminDashboard({
                   left: '1rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-secondary)',
                   display: 'flex',
                   alignItems: 'center',
                   pointerEvents: 'none'
@@ -983,8 +983,7 @@ export default function AdminDashboard({
                               <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                                 <button
                                   onClick={() => startEditCustomList(list)}
-                                  className="btn-icon"
-                                  style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'var(--color-border)', color: 'var(--text-primary)' }}
+                                  className="btn-icon btn-icon-edit"
                                   title="Edit Custom List"
                                 >
                                   <Edit2 size={13} />
@@ -1107,7 +1106,7 @@ export default function AdminDashboard({
                   <div className="schedule-datetime-grid">
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <Calendar size={14} /> {t('dateLabel')}
+                        <Calendar size={14} style={{ color: 'var(--accent-teal)' }} /> {t('dateLabel')}
                       </label>
                       <input
                         type="date"
@@ -1122,7 +1121,7 @@ export default function AdminDashboard({
                     
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <Clock size={14} /> {t('timeLabel')}
+                        <Clock size={14} style={{ color: 'var(--accent-teal)' }} /> {t('timeLabel')}
                       </label>
                       <input
                         type="time"
@@ -1138,7 +1137,7 @@ export default function AdminDashboard({
                   {/* Schedule Interval (Period) */}
                   <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                     <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Layers size={14} /> {t('frequencyLabel')}
+                      <Layers size={14} style={{ color: 'var(--accent-teal)' }} /> {t('frequencyLabel')}
                     </label>
                     <select
                       name="period"
@@ -1229,7 +1228,7 @@ export default function AdminDashboard({
                   left: '1rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-secondary)',
                   display: 'flex',
                   alignItems: 'center',
                   pointerEvents: 'none'
@@ -1336,8 +1335,7 @@ export default function AdminDashboard({
                               <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                                   <button 
                                     onClick={() => startEditSchedule(schedule)}
-                                    className="btn-icon"
-                                    style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'var(--color-border)', color: 'var(--text-primary)' }}
+                                    className="btn-icon btn-icon-edit"
                                     title="Edit Schedule"
                                   >
                                     <Edit2 size={13} />
@@ -1345,8 +1343,7 @@ export default function AdminDashboard({
 
                                 <button
                                   onClick={() => handleSendImmediately(schedule.id)}
-                                  className="btn-icon"
-                                  style={{ background: 'rgba(16, 185, 129, 0.08)', borderColor: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-green)' }}
+                                  className="btn-icon btn-icon-success"
                                   title={t('sendImmediatelyNow') || 'Send Now'}
                                 >
                                   <Play size={13} />

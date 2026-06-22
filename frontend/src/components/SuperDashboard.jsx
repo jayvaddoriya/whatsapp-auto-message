@@ -348,7 +348,7 @@ export default function SuperDashboard({
             left: '1rem',
             top: '50%',
             transform: 'translateY(-50%)',
-            color: 'var(--text-muted)',
+            color: 'var(--text-secondary)',
             display: 'flex',
             alignItems: 'center',
             pointerEvents: 'none'
@@ -423,12 +423,7 @@ export default function SuperDashboard({
                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                           <button 
                             onClick={() => openEditModal(admin)} 
-                            className="btn-icon" 
-                            style={{ 
-                              background: 'rgba(255,255,255,0.05)', 
-                              borderColor: 'var(--color-border)', 
-                              color: 'var(--text-primary)' 
-                            }}
+                            className="btn-icon btn-icon-edit" 
                             title="Edit Admin"
                           >
                             <Edit2 size={14} />
@@ -438,12 +433,7 @@ export default function SuperDashboard({
                             <>
                               <button 
                                 onClick={() => toggleAdminStatus(admin)} 
-                                className="btn-icon" 
-                                style={{ 
-                                  background: admin.enabled ? 'rgba(239, 68, 68, 0.05)' : 'rgba(16, 185, 129, 0.05)',
-                                  borderColor: admin.enabled ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                                  color: admin.enabled ? 'var(--color-error)' : 'var(--accent-green)' 
-                                }}
+                                className={`btn-icon ${admin.enabled ? 'btn-danger' : 'btn-icon-success'}`}
                                 title={admin.enabled ? "Disable Account" : "Enable Account"}
                               >
                                 {admin.enabled ? <PowerOff size={14} /> : <Power size={14} />}
@@ -515,7 +505,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('name')}</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <User size={16} />
                   </span>
                   <input
@@ -534,7 +524,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('emailLabel')}</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <Mail size={16} />
                   </span>
                   <input
@@ -553,7 +543,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('password')}</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <Lock size={16} />
                   </span>
                   <input
@@ -650,7 +640,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('name')}</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <User size={16} />
                   </span>
                   <input
@@ -668,7 +658,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('emailLabel')}</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <Mail size={16} />
                   </span>
                   <input
@@ -686,7 +676,7 @@ export default function SuperDashboard({
               <div className="form-group">
                 <label className="form-label">{t('password')} ({lang === 'en' ? 'Leave blank to keep current' : 'ચાલુ રાખવા માટે ખાલી રાખો'})</label>
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', display: 'flex' }}>
                     <Lock size={16} />
                   </span>
                   <input
