@@ -1,15 +1,21 @@
 const { 
   default: makeWASocket, 
-  useMultiFileAuthState, 
   DisconnectReason,
   fetchLatestBaileysVersion
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const path = require('path');
-const fs = require('fs');
 const qrcodeGenerator = require('qrcode');
 const NodeCache = require('node-cache');
-const db = require('./database');
+
+// MongoDB-backed auth state
+const { useMongoDBAuthState, deleteAuthState } = require('../utils/useMongoDBAuthState');
+
+// Mongoose Models
+const WhatsappSession = require('../models/WhatsappSession');
+const BroadcastList = require('../models/BroadcastList');
+const WhatsappContact = require('../models/WhatsappContact');
+const WhatsappMessage = require('../models/WhatsappMessage');
+const CustomBroadcastNumber = require('../models/CustomBroadcastNumber');
 
 // In-memory store for active socket connections
 const sessions = {};
@@ -23,29 +29,6 @@ const getRetryCache = (adminId) => {
   return retryCaches[adminId];
 };
 
-// Ensure auth directories exist
-const getAuthFolderPath = (adminId) => {
-  let baseDir;
-  try {
-    if (process.env.DATA_DIR) {
-      baseDir = path.resolve(process.env.DATA_DIR, 'auth');
-      if (!fs.existsSync(baseDir)) {
-        fs.mkdirSync(baseDir, { recursive: true });
-      }
-    } else {
-      baseDir = path.resolve(__dirname, 'auth');
-    }
-  } catch (err) {
-    console.warn(`[Storage Warning] Failed to create auth folder in DATA_DIR. Falling back to local directory. Error:`, err.message);
-    baseDir = path.resolve(__dirname, 'auth');
-  }
-  const folderPath = path.resolve(baseDir, `admin_${adminId}`);
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-  }
-  return folderPath;
-};
-
 // Initialize WhatsApp connection for an admin
 const connectToWhatsApp = async (adminId) => {
   // If session already exists and is connected/connecting, return it
@@ -57,8 +40,7 @@ const connectToWhatsApp = async (adminId) => {
   }
 
   console.log(`Starting WhatsApp session for Admin ID: ${adminId}`);
-  const authFolder = getAuthFolderPath(adminId);
-  const { state, saveCreds } = await useMultiFileAuthState(authFolder);
+  const { state, saveCreds } = await useMongoDBAuthState(adminId);
 
   // Fetch the latest Web version to prevent 405 handshake errors
   let version = [2, 3000, 1015976707];
@@ -83,10 +65,7 @@ const connectToWhatsApp = async (adminId) => {
     getMessage: async (key) => {
       if (key && key.id) {
         try {
-          const row = await db.get(
-            `SELECT message_json FROM whatsapp_messages WHERE msg_id = ?`,
-            [key.id]
-          );
+          const row = await WhatsappMessage.findOne({ msg_id: key.id });
           if (row && row.message_json) {
             return JSON.parse(row.message_json);
           }
@@ -94,9 +73,7 @@ const connectToWhatsApp = async (adminId) => {
           console.error(`Error loading message for retry:`, err);
         }
       }
-      return {
-        conversation: 'Message decryption retry'
-      };
+      return { conversation: 'Message decryption retry' };
     }
   });
 
@@ -110,11 +87,10 @@ const connectToWhatsApp = async (adminId) => {
   };
 
   // Update DB status to connecting
-  await db.run(
-    `INSERT INTO whatsapp_sessions (admin_id, status, qr_code, updated_at) 
-     VALUES (?, 'connecting', NULL, CURRENT_TIMESTAMP)
-     ON CONFLICT(admin_id) DO UPDATE SET status = 'connecting', qr_code = NULL, updated_at = CURRENT_TIMESTAMP`,
-    [adminId]
+  await WhatsappSession.findOneAndUpdate(
+    { admin_id: adminId },
+    { status: 'connecting', qr_code: null, updated_at: new Date() },
+    { upsert: true }
   );
 
   // Setup credentials saving
@@ -127,14 +103,13 @@ const connectToWhatsApp = async (adminId) => {
     if (qr) {
       console.log(`QR Code generated for Admin ID: ${adminId}`);
       try {
-        // Generate Base64 Data URL for the QR code
         const qrDataUrl = await qrcodeGenerator.toDataURL(qr);
         sessions[adminId].qr = qrDataUrl;
         sessions[adminId].status = 'qr_ready';
 
-        await db.run(
-          `UPDATE whatsapp_sessions SET status = 'qr_ready', qr_code = ?, updated_at = CURRENT_TIMESTAMP WHERE admin_id = ?`,
-          [qrDataUrl, adminId]
+        await WhatsappSession.findOneAndUpdate(
+          { admin_id: adminId },
+          { status: 'qr_ready', qr_code: qrDataUrl, updated_at: new Date() }
         );
       } catch (err) {
         console.error('Error generating QR code data URL:', err);
@@ -147,10 +122,9 @@ const connectToWhatsApp = async (adminId) => {
       
       console.log(`Connection closed for Admin ID: ${adminId}. Reason code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
       
-      // Update DB status
-      await db.run(
-        `UPDATE whatsapp_sessions SET status = 'disconnected', qr_code = NULL, updated_at = CURRENT_TIMESTAMP WHERE admin_id = ?`,
-        [adminId]
+      await WhatsappSession.findOneAndUpdate(
+        { admin_id: adminId },
+        { status: 'disconnected', qr_code: null, updated_at: new Date() }
       );
       
       if (sessions[adminId]) {
@@ -159,21 +133,18 @@ const connectToWhatsApp = async (adminId) => {
       }
 
       if (shouldReconnect) {
-        // Retry connection after 5 seconds
         setTimeout(() => {
           connectToWhatsApp(adminId).catch(err => console.error(`Error reconnecting Admin ID ${adminId}:`, err));
         }, 5000);
       } else {
-        // User logged out - clean up credentials and delete session
-        console.log(`Admin ID ${adminId} logged out. Deleting credentials folder.`);
+        console.log(`Admin ID ${adminId} logged out. Deleting credentials from MongoDB.`);
         try {
-          fs.rmSync(authFolder, { recursive: true, force: true });
+          await deleteAuthState(adminId);
         } catch (e) {
-          console.error(`Failed to delete auth folder for Admin ID ${adminId}:`, e);
+          console.error(`Failed to delete auth state for Admin ID ${adminId}:`, e);
         }
         delete sessions[adminId];
-        // Clean up cached broadcast lists
-        await db.run(`DELETE FROM broadcast_lists WHERE admin_id = ?`, [adminId]);
+        await BroadcastList.deleteMany({ admin_id: adminId });
       }
     }
 
@@ -189,11 +160,9 @@ const connectToWhatsApp = async (adminId) => {
         sessions[adminId].pushName = pushName;
       }
 
-      await db.run(
-        `UPDATE whatsapp_sessions 
-         SET status = 'connected', qr_code = NULL, phone_number = ?, push_name = ?, updated_at = CURRENT_TIMESTAMP 
-         WHERE admin_id = ?`,
-        [phoneNumber, pushName, adminId]
+      await WhatsappSession.findOneAndUpdate(
+        { admin_id: adminId },
+        { status: 'connected', qr_code: null, phone_number: phoneNumber, push_name: pushName, updated_at: new Date() }
       );
     }
   });
@@ -205,15 +174,13 @@ const connectToWhatsApp = async (adminId) => {
     for (const chat of chatsList) {
       if (chat.id && chat.id.endsWith('@broadcast') && chat.id !== 'status@broadcast') {
         const name = chat.name || chat.id.split('@')[0];
-        // Determine recipient count if available in metadata
         const recipientCount = chat.participants ? chat.participants.length : 0;
         
         try {
-          await db.run(
-            `INSERT INTO broadcast_lists (admin_id, jid, name, recipient_count, updated_at) 
-             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-             ON CONFLICT(admin_id, jid) DO UPDATE SET name = excluded.name, recipient_count = excluded.recipient_count, updated_at = CURRENT_TIMESTAMP`,
-            [adminId, chat.id, name, recipientCount]
+          await BroadcastList.findOneAndUpdate(
+            { admin_id: adminId, jid: chat.id },
+            { name, recipient_count: recipientCount, updated_at: new Date() },
+            { upsert: true }
           );
         } catch (err) {
           console.error(`Error saving broadcast list ${chat.id} for Admin ID ${adminId}:`, err);
@@ -224,11 +191,10 @@ const connectToWhatsApp = async (adminId) => {
         const name = chat.name || phone;
         
         try {
-          await db.run(
-            `INSERT INTO whatsapp_contacts (admin_id, jid, name, phone_number, created_at) 
-             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-             ON CONFLICT(admin_id, jid) DO UPDATE SET name = excluded.name, phone_number = excluded.phone_number`,
-            [adminId, jid, name, phone]
+          await WhatsappContact.findOneAndUpdate(
+            { admin_id: adminId, jid },
+            { name, phone_number: phone },
+            { upsert: true, setDefaultsOnInsert: true }
           );
         } catch (err) {
           console.error(`Error saving contact from chat ${jid} for Admin ID ${adminId}:`, err);
@@ -245,16 +211,13 @@ const connectToWhatsApp = async (adminId) => {
       if (contact.id && contact.id.endsWith('@s.whatsapp.net')) {
         const jid = contact.id;
         const phone = jid.split('@')[0];
-        
-        // Priority: Name -> Verified Business Name -> Push Notification Name -> Phone number
         const name = contact.name || contact.verifiedName || contact.notify || phone;
         
         try {
-          await db.run(
-            `INSERT INTO whatsapp_contacts (admin_id, jid, name, phone_number, created_at) 
-             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-             ON CONFLICT(admin_id, jid) DO UPDATE SET name = excluded.name, phone_number = excluded.phone_number`,
-            [adminId, jid, name, phone]
+          await WhatsappContact.findOneAndUpdate(
+            { admin_id: adminId, jid },
+            { name, phone_number: phone },
+            { upsert: true, setDefaultsOnInsert: true }
           );
         } catch (err) {
           console.error(`Error saving contact ${jid} for Admin ID ${adminId}:`, err);
@@ -277,9 +240,9 @@ const connectToWhatsApp = async (adminId) => {
     for (const update of updates) {
       if (update.id && update.id.endsWith('@broadcast') && update.name) {
         try {
-          await db.run(
-            `UPDATE broadcast_lists SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE admin_id = ? AND jid = ?`,
-            [update.name, adminId, update.id]
+          await BroadcastList.findOneAndUpdate(
+            { admin_id: adminId, jid: update.id },
+            { name: update.name, updated_at: new Date() }
           );
         } catch (err) {
           console.error(`Error updating broadcast list name for ${update.id}:`, err);
@@ -303,15 +266,14 @@ const connectToWhatsApp = async (adminId) => {
       if (update.id && update.id.endsWith('@s.whatsapp.net')) {
         const jid = update.id;
         const phone = jid.split('@')[0];
-        const current = await db.get("SELECT name FROM whatsapp_contacts WHERE admin_id = ? AND jid = ?", [adminId, jid]);
+        const current = await WhatsappContact.findOne({ admin_id: adminId, jid });
         const newName = update.name || update.verifiedName || update.notify || (current ? current.name : phone);
         
         try {
-          await db.run(
-            `INSERT INTO whatsapp_contacts (admin_id, jid, name, phone_number) 
-             VALUES (?, ?, ?, ?)
-             ON CONFLICT(admin_id, jid) DO UPDATE SET name = excluded.name`,
-            [adminId, jid, newName, phone]
+          await WhatsappContact.findOneAndUpdate(
+            { admin_id: adminId, jid },
+            { name: newName, phone_number: phone },
+            { upsert: true, setDefaultsOnInsert: true }
           );
         } catch (err) {
           console.error(`Error updating contact ${jid}:`, err);
@@ -330,16 +292,14 @@ const connectToWhatsApp = async (adminId) => {
     if (!messages || !Array.isArray(messages)) return;
     for (const msg of messages) {
       if (msg.key && msg.key.id && msg.message) {
-        // Skip protocol or sender key distribution messages to save space
         if (msg.message.protocolMessage || msg.message.senderKeyDistributionMessage) {
           continue;
         }
         try {
-          await db.run(
-            `INSERT INTO whatsapp_messages (msg_id, admin_id, remote_jid, message_json)
-             VALUES (?, ?, ?, ?)
-             ON CONFLICT(msg_id) DO UPDATE SET message_json = excluded.message_json`,
-            [msg.key.id, adminId, msg.key.remoteJid, JSON.stringify(msg.message)]
+          await WhatsappMessage.findOneAndUpdate(
+            { msg_id: msg.key.id },
+            { admin_id: adminId, remote_jid: msg.key.remoteJid, message_json: JSON.stringify(msg.message) },
+            { upsert: true, setDefaultsOnInsert: true }
           );
         } catch (err) {
           console.error(`Error saving message ${msg.key.id} in messages.upsert:`, err);
@@ -367,20 +327,19 @@ const disconnectWhatsApp = async (adminId) => {
   }
 
   // Clean up database session status
-  await db.run(
-    `UPDATE whatsapp_sessions SET status = 'disconnected', qr_code = NULL, updated_at = CURRENT_TIMESTAMP WHERE admin_id = ?`,
-    [adminId]
+  await WhatsappSession.findOneAndUpdate(
+    { admin_id: adminId },
+    { status: 'disconnected', qr_code: null, updated_at: new Date() }
   );
 
   // Clean up cache
-  await db.run(`DELETE FROM broadcast_lists WHERE admin_id = ?`, [adminId]);
-  await db.run(`DELETE FROM whatsapp_contacts WHERE admin_id = ?`, [adminId]);
+  await BroadcastList.deleteMany({ admin_id: adminId });
+  await WhatsappContact.deleteMany({ admin_id: adminId });
 
-  const authFolder = getAuthFolderPath(adminId);
   try {
-    fs.rmSync(authFolder, { recursive: true, force: true });
+    await deleteAuthState(adminId);
   } catch (e) {
-    console.error(`Failed to delete auth folder during disconnect for Admin ID ${adminId}:`, e);
+    console.error(`Failed to delete auth state during disconnect for Admin ID ${adminId}:`, e);
   }
 
   delete sessions[adminId];
@@ -396,13 +355,10 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
   try {
     // Intercept Custom Broadcast List JIDs
     if (broadcastJid.startsWith('custom_list_')) {
-      const customListId = parseInt(broadcastJid.replace('custom_list_', ''), 10);
+      const customListId = broadcastJid.replace('custom_list_', '');
       
       // Fetch phone numbers in this custom list
-      const numbers = await db.all(
-        `SELECT phone_number FROM custom_broadcast_numbers WHERE broadcast_id = ?`,
-        [customListId]
-      );
+      const numbers = await CustomBroadcastNumber.find({ broadcast_id: customListId });
 
       console.log(`[Custom Broadcast] Starting sending to ${numbers.length} recipients for Custom List ID ${customListId}`);
       
@@ -414,11 +370,10 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
           console.log(`[Custom Broadcast] Message sent to ${recipientJid}`);
           if (sentMsg && sentMsg.key && sentMsg.message) {
             try {
-              await db.run(
-                `INSERT INTO whatsapp_messages (msg_id, admin_id, remote_jid, message_json)
-                 VALUES (?, ?, ?, ?)
-                 ON CONFLICT(msg_id) DO UPDATE SET message_json = excluded.message_json`,
-                [sentMsg.key.id, adminId, recipientJid, JSON.stringify(sentMsg.message)]
+              await WhatsappMessage.findOneAndUpdate(
+                { msg_id: sentMsg.key.id },
+                { admin_id: adminId, remote_jid: recipientJid, message_json: JSON.stringify(sentMsg.message) },
+                { upsert: true, setDefaultsOnInsert: true }
               );
             } catch (dbErr) {
               console.error(`Failed to store custom broadcast message:`, dbErr);
@@ -443,11 +398,10 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
     console.log(`Successfully sent native broadcast message to ${broadcastJid} for Admin ID ${adminId}`);
     if (sentMsg && sentMsg.key && sentMsg.message) {
       try {
-        await db.run(
-          `INSERT INTO whatsapp_messages (msg_id, admin_id, remote_jid, message_json)
-           VALUES (?, ?, ?, ?)
-           ON CONFLICT(msg_id) DO UPDATE SET message_json = excluded.message_json`,
-          [sentMsg.key.id, adminId, broadcastJid, JSON.stringify(sentMsg.message)]
+        await WhatsappMessage.findOneAndUpdate(
+          { msg_id: sentMsg.key.id },
+          { admin_id: adminId, remote_jid: broadcastJid, message_json: JSON.stringify(sentMsg.message) },
+          { upsert: true, setDefaultsOnInsert: true }
         );
       } catch (dbErr) {
         console.error(`Failed to store sent broadcast message:`, dbErr);
@@ -462,11 +416,9 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
 
 // Get active session status
 const getSessionStatus = async (adminId) => {
-  // Try to load from DB first to get cached values
-  const cached = await db.get(`SELECT * FROM whatsapp_sessions WHERE admin_id = ?`, [adminId]);
+  const cached = await WhatsappSession.findOne({ admin_id: adminId });
   
   if (sessions[adminId]) {
-    // Sync DB status with active session if out of sync
     const active = sessions[adminId];
     return {
       status: active.status,
@@ -496,9 +448,9 @@ const getSessionStatus = async (adminId) => {
 // Reconnect all previously connected sessions on server start
 const initAllSessions = async () => {
   try {
-    const connectedSessions = await db.all(
-      `SELECT admin_id FROM whatsapp_sessions WHERE status IN ('connected', 'connecting', 'qr_ready')`
-    );
+    const connectedSessions = await WhatsappSession.find({
+      status: { $in: ['connected', 'connecting', 'qr_ready'] }
+    });
     console.log(`Found ${connectedSessions.length} previously active sessions to restore...`);
     for (const session of connectedSessions) {
       connectToWhatsApp(session.admin_id).catch(err => {
