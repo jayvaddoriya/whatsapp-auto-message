@@ -1,6 +1,6 @@
 const cron = require('node-cron');
-const db = require('./database');
-const whatsapp = require('./whatsapp');
+const Schedule = require('../models/Schedule');
+const whatsappService = require('./whatsapp');
 
 // Calculate next execution time for a recurring schedule
 const calculateNextRun = (baseTimeStr, period) => {
@@ -50,69 +50,65 @@ const checkAndSendSchedules = async () => {
 
   try {
     // Find all schedules that are due (next_run_at <= now) and are in pending or active status
-    const dueSchedules = await db.all(
-      `SELECT * FROM schedules 
-       WHERE (status = 'pending' OR status = 'active') 
-       AND next_run_at <= ?`,
-      [nowISO]
-    );
+    const dueSchedules = await Schedule.find({
+      status: { $in: ['pending', 'active'] },
+      next_run_at: { $lte: nowISO }
+    });
 
     if (dueSchedules.length > 0) {
       console.log(`[Scheduler] Found ${dueSchedules.length} schedules due for execution at ${nowISO}`);
     }
 
     for (const schedule of dueSchedules) {
-      const { id, admin_id, broadcast_jid, message, period, next_run_at } = schedule;
+      const { _id: id, admin_id, broadcast_jid, message, period, next_run_at } = schedule;
       
       try {
         console.log(`[Scheduler] Attempting to send schedule ID: ${id} to ${broadcast_jid} (Admin ID: ${admin_id})`);
         
         // Deliver message
-        await whatsapp.sendMessage(admin_id, broadcast_jid, message);
+        await whatsappService.sendMessage(admin_id, broadcast_jid, message);
 
         // Calculate next run if recurring
         if (period === 'once') {
-          await db.run(
-            `UPDATE schedules 
-             SET status = 'sent', last_run_at = ?, next_run_at = NULL, error_message = NULL 
-             WHERE id = ?`,
-            [nowISO, id]
-          );
+          await Schedule.findByIdAndUpdate(id, {
+            status: 'sent',
+            last_run_at: nowISO,
+            next_run_at: null,
+            error_message: null
+          });
           console.log(`[Scheduler] Schedule ID: ${id} successfully marked as 'sent'.`);
         } else {
           const nextRun = calculateNextRun(next_run_at, period);
           const nextRunISO = nextRun ? nextRun.toISOString() : null;
           
-          await db.run(
-            `UPDATE schedules 
-             SET status = 'active', last_run_at = ?, next_run_at = ?, error_message = NULL 
-             WHERE id = ?`,
-            [nowISO, nextRunISO, id]
-          );
+          await Schedule.findByIdAndUpdate(id, {
+            status: 'active',
+            last_run_at: nowISO,
+            next_run_at: nextRunISO,
+            error_message: null
+          });
           console.log(`[Scheduler] Recurring Schedule ID: ${id} processed. Next run scheduled for: ${nextRunISO}`);
         }
       } catch (err) {
         console.error(`[Scheduler] Error executing schedule ID ${id}:`, err);
 
-        // Update database with failure log
         if (period === 'once') {
-          await db.run(
-            `UPDATE schedules 
-             SET status = 'failed', last_run_at = ?, next_run_at = NULL, error_message = ? 
-             WHERE id = ?`,
-            [nowISO, err.message || 'WhatsApp sending failed', id]
-          );
+          await Schedule.findByIdAndUpdate(id, {
+            status: 'failed',
+            last_run_at: nowISO,
+            next_run_at: null,
+            error_message: err.message || 'WhatsApp sending failed'
+          });
         } else {
-          // If recurring, calculate next run time anyway, so it doesn't get stuck in an endless loop attempting to send every minute
           const nextRun = calculateNextRun(next_run_at, period);
           const nextRunISO = nextRun ? nextRun.toISOString() : null;
           
-          await db.run(
-            `UPDATE schedules 
-             SET status = 'active', last_run_at = ?, next_run_at = ?, error_message = ? 
-             WHERE id = ?`,
-            [nowISO, nextRunISO, err.message || 'WhatsApp sending failed', id]
-          );
+          await Schedule.findByIdAndUpdate(id, {
+            status: 'active',
+            last_run_at: nowISO,
+            next_run_at: nextRunISO,
+            error_message: err.message || 'WhatsApp sending failed'
+          });
           console.log(`[Scheduler] Recurring Schedule ID ${id} failed but rescheduled for: ${nextRunISO}`);
         }
       }

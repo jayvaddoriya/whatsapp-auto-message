@@ -4,15 +4,12 @@ services:
     env: node
     rootDir: backend
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: node src/server.js
     envVars:
       - key: PORT
         value: 5000
-      - key: DATA_DIR
-        value: /var/lib/whatsapp-data
       - key: JWT_SECRET
         generateValue: true
-    disk:
-      name: whatsapp-persistence
-      mountPath: /var/lib/whatsapp-data
-      sizeGB: 1
+      - key: MONGODB_URI
+        sync: false  # Set manually in Render dashboard
+
