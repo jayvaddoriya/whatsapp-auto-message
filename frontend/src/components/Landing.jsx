@@ -257,26 +257,32 @@ export default function Landing({
           justifyContent: 'center',
           alignItems: 'center'
         }}>
-          {/* Glass Glow effect behind image */}
-          <div style={{
-            position: 'absolute',
-            width: '90%',
-            height: '90%',
-            background: 'radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }}></div>
+          {/* Glass Glow effect behind image - Only in dark mode */}
+          {theme === 'dark' && (
+            <div style={{
+              position: 'absolute',
+              width: '90%',
+              height: '90%',
+              background: 'radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%)',
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}></div>
+          )}
 
           <img 
             src="/landing_hero.png" 
             alt="WhatsApp Scheduler Dashboard Illustration" 
             style={{
               width: '100%',
-              maxHeight: '420px',
-              objectFit: 'contain',
+              maxWidth: '420px',
+              aspectRatio: '1/1',
+              objectFit: 'cover',
               borderRadius: '24px',
+              border: '1px solid var(--color-border)',
+              boxShadow: theme === 'dark' 
+                ? '0 20px 45px rgba(0, 0, 0, 0.5)' 
+                : '0 20px 45px rgba(8, 12, 22, 0.15)',
               zIndex: 1,
-              filter: 'drop-shadow(0 15px 35px rgba(0,0,0,0.45))',
               animation: 'floatImage 6s ease-in-out infinite'
             }}
           />
