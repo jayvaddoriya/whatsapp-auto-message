@@ -1057,8 +1057,7 @@ export default function Landing({
             flexDirection: 'column',
             gap: '1.5rem',
             boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
-            background: theme === 'dark' ? 'rgba(8, 12, 22, 0.4)' : 'rgba(255, 255, 255, 0.5)',
-            height: '100%'
+            background: theme === 'dark' ? 'rgba(8, 12, 22, 0.4)' : 'rgba(255, 255, 255, 0.5)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{
