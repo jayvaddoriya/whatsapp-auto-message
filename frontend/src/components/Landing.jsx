@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   MessageSquare, Calendar, Layers, Shield, Image, Globe, 
   Phone, ArrowRight, CheckCircle, Sparkles, Video, FileText,
-  HelpCircle, Clock, AlertTriangle, ChevronDown, ChevronUp
+  HelpCircle, Clock, AlertTriangle, ChevronDown, ChevronUp, Play
 } from 'lucide-react';
 import { HeaderControls } from '../App';
 
