@@ -464,20 +464,33 @@ export default function Landing({
         </div>
 
         {/* Workflow Infographic Graphic */}
-        <div className="workflow-desktop-image">
-          <img 
-            src="/software_workflow.png" 
-            alt="WhatsApp Scheduler 3-Step Workflow Infographic" 
-            style={{
-              width: '100%',
-              maxWidth: '960px',
-              borderRadius: '20px',
-              border: '1px solid var(--color-border)',
-              boxShadow: theme === 'dark' 
-                ? '0 15px 35px rgba(0, 0, 0, 0.4)' 
-                : '0 15px 35px rgba(8, 12, 22, 0.1)'
-            }}
-          />
+        <div className="workflow-desktop-image" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '4rem'
+        }}>
+          <div className="workflow-image-container" style={{
+            background: theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.015)',
+            border: '1px solid var(--color-border)',
+            padding: '0.75rem',
+            borderRadius: '24px',
+            boxShadow: theme === 'dark' 
+              ? '0 25px 50px rgba(0, 0, 0, 0.4)' 
+              : '0 25px 50px rgba(8, 12, 22, 0.06)',
+            maxWidth: '740px',
+            width: '100%'
+          }}>
+            <img 
+              src="/software_workflow.png" 
+              alt="WhatsApp Scheduler 3-Step Workflow Infographic" 
+              style={{
+                width: '100%',
+                borderRadius: '16px',
+                display: 'block',
+                border: '1px solid rgba(255, 255, 255, 0.04)'
+              }}
+            />
+          </div>
         </div>
 
         {/* Detailed steps columns */}
@@ -1627,15 +1640,16 @@ export default function Landing({
         }
 
         /* Infographic Hover effect */
-        .workflow-desktop-image img {
+        .workflow-image-container {
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
-                      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
-        .workflow-desktop-image img:hover {
-          transform: scale(1.01) translateY(-2px);
+        .workflow-image-container:hover {
+          transform: translateY(-5px);
           box-shadow: ${theme === 'dark'
-            ? '0 20px 40px rgba(16, 185, 129, 0.12)'
-            : '0 20px 40px rgba(16, 185, 129, 0.06)'} !important;
+            ? '0 30px 60px rgba(16, 185, 129, 0.15)'
+            : '0 30px 60px rgba(16, 185, 129, 0.08)'} !important;
           border-color: var(--accent-green) !important;
         }
 
