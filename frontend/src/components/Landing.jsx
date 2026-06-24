@@ -80,8 +80,7 @@ export default function Landing({
       overflowX: 'hidden'
     }}>
       {/* Glow effects background */}
-      <div className="bg-gradient-glow" style={{ top: '-10%', left: '-10%', width: '40%', height: '40%', opacity: 0.15 }}></div>
-      <div className="bg-gradient-glow" style={{ bottom: '-10%', right: '-10%', width: '45%', height: '45%', opacity: 0.12 }}></div>
+      <div className="bg-gradient-glow"></div>
 
       {/* Header/Navbar */}
       <nav style={{
@@ -94,7 +93,7 @@ export default function Landing({
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: 'rgba(8, 12, 22, 0.5)'
+        backgroundColor: theme === 'dark' ? 'rgba(8, 12, 22, 0.5)' : 'rgba(241, 245, 249, 0.7)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{
@@ -307,7 +306,7 @@ export default function Landing({
       {/* Features Section */}
       <section style={{
         padding: '5rem 5% 6rem 5%',
-        backgroundColor: 'rgba(8, 12, 22, 0.35)',
+        backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.45)',
         borderTop: '1px solid var(--color-border)',
         borderBottom: '1px solid var(--color-border)'
       }}>
@@ -523,7 +522,7 @@ export default function Landing({
               fontSize: '0.9rem',
               color: 'var(--text-secondary)',
               marginTop: '0.5rem',
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)',
               padding: '0.5rem 1rem',
               borderRadius: '20px',
               border: '1px solid var(--color-border)'
