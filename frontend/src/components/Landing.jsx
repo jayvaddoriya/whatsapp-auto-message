@@ -1126,12 +1126,17 @@ export default function Landing({
         /* Features Grid Responsiveness */
         .features-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 1.5rem;
           max-width: 1280px;
           margin: 0 auto;
         }
-        @media (max-width: 480px) {
+        @media (max-width: 900px) {
+          .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 600px) {
           .features-grid {
             grid-template-columns: 1fr !important;
             padding: 0 0.5rem;
