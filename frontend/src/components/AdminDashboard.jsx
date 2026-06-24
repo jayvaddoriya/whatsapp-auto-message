@@ -56,6 +56,8 @@ export default function AdminDashboard({
     schedule_time: '',
     period: 'once'
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
   const [formError, setFormError] = useState('');
   const [submittingSchedule, setSubmittingSchedule] = useState(false);
 
@@ -378,13 +380,49 @@ export default function AdminDashboard({
     }
   }, [editingSchedule]);
 
-  // Handle Form Inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormFields(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setSelectedFile(null);
+      return;
+    }
+
+    // Limit file size to 15MB to fit within MongoDB 16MB document limit safely
+    if (file.size > 15 * 1024 * 1024) {
+      alert(lang === 'en' 
+        ? 'File size must be under 15MB to prevent database storage issues.' 
+        : 'ડેટાબેઝ સંગ્રહ મર્યાદાને લીધે ફાઇલનું કદ ૧૫MB થી ઓછું હોવું આવશ્યક છે.'
+      );
+      e.target.value = '';
+      setSelectedFile(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Data = reader.result.split(',')[1]; // Get raw base64 string
+      setSelectedFile({
+        data: base64Data,
+        contentType: file.type,
+        filename: file.name
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // Create or Update Schedule
@@ -412,7 +450,8 @@ export default function AdminDashboard({
         schedule_date: formFields.schedule_date,
         schedule_time: formFields.schedule_time,
         period: formFields.period,
-        next_run_at: nextRunAtUTC
+        next_run_at: nextRunAtUTC,
+        media: selectedFile
       };
 
       const url = editingSchedule 
@@ -441,6 +480,10 @@ export default function AdminDashboard({
         schedule_time: new Date().toTimeString().slice(0, 5),
         period: 'once'
       });
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       
       fetchSchedules();
       alert(editingSchedule 
@@ -464,6 +507,7 @@ export default function AdminDashboard({
       schedule_time: schedule.schedule_time,
       period: schedule.period
     });
+    setSelectedFile(schedule.media && schedule.media.data ? schedule.media : null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -477,6 +521,10 @@ export default function AdminDashboard({
       schedule_time: new Date().toTimeString().slice(0, 5),
       period: 'once'
     });
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // Delete Schedule
@@ -1102,6 +1150,65 @@ export default function AdminDashboard({
                     />
                   </div>
 
+                  {/* Media File Attachment */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      {lang === 'en' ? 'Attach Image or Video (Optional)' : 'ચિત્ર અથવા વિડિઓ જોડો (વૈકલ્પિક)'}
+                    </label>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      accept="image/*,video/*"
+                      onChange={handleFileChange}
+                      className="form-input"
+                      style={{ fontSize: '0.85rem', padding: '0.5rem' }}
+                    />
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.25rem' }}>
+                      {lang === 'en' ? 'Supported formats: JPG, PNG, GIF, MP4 (Max 15MB)' : 'સપોર્ટેડ ફોર્મેટ: JPG, PNG, GIF, MP4 (મહત્તમ ૧૫MB)'}
+                    </span>
+
+                    {/* Preview Box */}
+                    {selectedFile && selectedFile.data && (
+                      <div style={{
+                        marginTop: '0.75rem',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '12px',
+                        padding: '0.75rem',
+                        position: 'relative'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--accent-teal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }} title={selectedFile.filename}>
+                            📎 {selectedFile.filename || 'Attached File'}
+                          </span>
+                          <button 
+                            type="button" 
+                            onClick={removeSelectedFile}
+                            className="btn-icon btn-danger"
+                            style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', height: 'auto', display: 'inline-flex' }}
+                          >
+                            {lang === 'en' ? 'Remove' : 'દૂર કરો'}
+                          </button>
+                        </div>
+
+                        {/* Preview Rendering */}
+                        {selectedFile.contentType?.startsWith('image/') ? (
+                          <img 
+                            src={`data:${selectedFile.contentType};base64,${selectedFile.data}`} 
+                            alt="Media Preview" 
+                            style={{ width: '100%', maxHeight: '140px', objectFit: 'contain', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}
+                          />
+                        ) : selectedFile.contentType?.startsWith('video/') ? (
+                          <video 
+                            src={`data:${selectedFile.contentType};base64,${selectedFile.data}`} 
+                            controls
+                            style={{ width: '100%', maxHeight: '140px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}
+                          />
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Date & Time Picker */}
                   <div className="schedule-datetime-grid">
                     <div className="form-group" style={{ marginBottom: 0 }}>
@@ -1292,6 +1399,19 @@ export default function AdminDashboard({
                               >
                                 {schedule.message}
                               </div>
+                              {schedule.media && schedule.media.data && (
+                                <div style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  gap: '0.25rem', 
+                                  fontSize: '0.7rem', 
+                                  color: 'var(--accent-teal)', 
+                                  marginTop: '0.25rem',
+                                  fontWeight: 600
+                                }}>
+                                  {schedule.media.contentType?.startsWith('video/') ? '🎥 Video' : '📷 Image'}
+                                </div>
+                              )}
                             </td>
                             
                             <td>

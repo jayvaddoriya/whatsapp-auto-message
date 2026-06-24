@@ -12,6 +12,11 @@ const scheduleSchema = new mongoose.Schema({
   next_run_at: { type: String, default: null },
   last_run_at: { type: String, default: null },
   error_message: { type: String, default: null },
+  media: {
+    data: { type: String, default: null },
+    contentType: { type: String, default: null },
+    filename: { type: String, default: null }
+  },
   created_at: { type: Date, default: Date.now }
 });
 

@@ -346,13 +346,30 @@ const disconnectWhatsApp = async (adminId) => {
   return { success: true };
 };
 
-const sendMessage = async (adminId, broadcastJid, messageText) => {
+const sendMessage = async (adminId, broadcastJid, messageText, media = null) => {
   const session = sessions[adminId];
   if (!session || session.status !== 'connected' || !session.sock) {
     throw new Error('WhatsApp is not connected for this admin.');
   }
 
   try {
+    // Build message payload (handle text or media with caption)
+    let messagePayload = { text: messageText };
+    if (media && media.data) {
+      const mediaBuffer = Buffer.from(media.data, 'base64');
+      if (media.contentType && media.contentType.startsWith('image/')) {
+        messagePayload = {
+          image: mediaBuffer,
+          caption: messageText
+        };
+      } else if (media.contentType && media.contentType.startsWith('video/')) {
+        messagePayload = {
+          video: mediaBuffer,
+          caption: messageText
+        };
+      }
+    }
+
     // Intercept Custom Broadcast List JIDs
     if (broadcastJid.startsWith('custom_list_')) {
       const customListId = broadcastJid.replace('custom_list_', '');
@@ -366,7 +383,7 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
       for (const entry of numbers) {
         const recipientJid = `${entry.phone_number}@s.whatsapp.net`;
         try {
-          const sentMsg = await session.sock.sendMessage(recipientJid, { text: messageText });
+          const sentMsg = await session.sock.sendMessage(recipientJid, messagePayload);
           console.log(`[Custom Broadcast] Message sent to ${recipientJid}`);
           if (sentMsg && sentMsg.key && sentMsg.message) {
             try {
@@ -382,8 +399,10 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
         } catch (numErr) {
           console.error(`[Custom Broadcast] Error sending to ${recipientJid}:`, numErr.message);
         }
-        // Delay 2.5 seconds to protect account
-        await new Promise(resolve => setTimeout(resolve, 2500));
+        
+        // Delay 15 seconds if more than 1 contact to prevent bans, otherwise 2.5s
+        const delayMs = numbers.length > 1 ? 15000 : 2500;
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
       
       return { success: true };
@@ -392,7 +411,7 @@ const sendMessage = async (adminId, broadcastJid, messageText) => {
     // Normal WhatsApp Broadcast JID
     const sentMsg = await session.sock.sendMessage(
       broadcastJid,
-      { text: messageText },
+      messagePayload,
       { broadcast: true }
     );
     console.log(`Successfully sent native broadcast message to ${broadcastJid} for Admin ID ${adminId}`);

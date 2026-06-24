@@ -4,6 +4,7 @@ backend/node_modules/
 frontend/node_modules/
 
 # Database (MongoDB is external, no local files to ignore)
+backend/database.sqlite
 
 # WhatsApp credentials & sessions (VERY IMPORTANT to prevent leak)
 backend/auth/

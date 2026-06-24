@@ -28,7 +28,7 @@ const list = async (req, res) => {
 
 // POST /api/schedules
 const create = async (req, res) => {
-  const { broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period } = req.body;
+  const { broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period, media } = req.body;
 
   if (!broadcast_jid || !broadcast_name || !message || !schedule_date || !schedule_time || !period) {
     return res.status(400).json({ error: 'All schedule details are required.' });
@@ -56,7 +56,8 @@ const create = async (req, res) => {
       schedule_time,
       period,
       status: 'pending',
-      next_run_at: nextRunAtISO
+      next_run_at: nextRunAtISO,
+      media: media || { data: null, contentType: null, filename: null }
     });
 
     res.status(201).json({
@@ -73,7 +74,7 @@ const create = async (req, res) => {
 // PUT /api/schedules/:id
 const update = async (req, res) => {
   const scheduleId = req.params.id;
-  const { broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period } = req.body;
+  const { broadcast_jid, broadcast_name, message, schedule_date, schedule_time, period, media } = req.body;
 
   if (!broadcast_jid || !broadcast_name || !message || !schedule_date || !schedule_time || !period) {
     return res.status(400).json({ error: 'All schedule details (broadcast list, message, date, time, period) are required.' });
@@ -106,7 +107,8 @@ const update = async (req, res) => {
       period,
       status: 'pending',
       next_run_at: nextRunAtISO,
-      error_message: null
+      error_message: null,
+      media: media || { data: null, contentType: null, filename: null }
     });
 
     res.json({ message: 'Schedule updated successfully.', next_run_at: nextRunAtISO });
@@ -144,8 +146,8 @@ const sendNow = async (req, res) => {
 
     console.log(`[Send-Now] Triggering immediate send for schedule ${scheduleId}`);
 
-    // Call WhatsApp sender directly
-    await whatsappService.sendMessage(req.user.id, schedule.broadcast_jid, schedule.message);
+    // Call WhatsApp sender directly with media
+    await whatsappService.sendMessage(req.user.id, schedule.broadcast_jid, schedule.message, schedule.media);
 
     const nowISO = new Date().toISOString();
 

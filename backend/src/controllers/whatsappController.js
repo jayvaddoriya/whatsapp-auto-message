@@ -2,6 +2,7 @@ const whatsappService = require('../services/whatsapp');
 const CustomBroadcast = require('../models/CustomBroadcast');
 const CustomBroadcastNumber = require('../models/CustomBroadcastNumber');
 const WhatsappContact = require('../models/WhatsappContact');
+const BroadcastList = require('../models/BroadcastList');
 
 // GET /api/whatsapp/status
 const getStatus = async (req, res) => {
@@ -39,7 +40,7 @@ const disconnect = async (req, res) => {
 // GET /api/whatsapp/broadcasts
 const getBroadcasts = async (req, res) => {
   try {
-    // Fetch custom broadcast groups (created manually in web console)
+    // 1. Fetch custom broadcast groups (created manually in web console)
     const customLists = await CustomBroadcast.find({ admin_id: req.user.id });
 
     // Build formatted list with recipient counts
@@ -54,10 +55,22 @@ const getBroadcasts = async (req, res) => {
       });
     }
 
-    // Sort by name
-    formattedCustom.sort((a, b) => a.name.localeCompare(b.name));
+    // 2. Fetch native WhatsApp broadcast lists
+    const nativeLists = await BroadcastList.find({ admin_id: req.user.id });
+    const formattedNative = nativeLists.map(nl => ({
+      jid: nl.jid,
+      name: nl.name,
+      recipient_count: nl.recipient_count || 0,
+      is_custom: false
+    }));
 
-    res.json(formattedCustom);
+    // Merge both
+    const allBroadcasts = [...formattedCustom, ...formattedNative];
+
+    // Sort by name
+    allBroadcasts.sort((a, b) => a.name.localeCompare(b.name));
+
+    res.json(allBroadcasts);
   } catch (err) {
     console.error('List broadcasts error:', err);
     res.status(500).json({ error: 'Failed to fetch broadcast lists.' });

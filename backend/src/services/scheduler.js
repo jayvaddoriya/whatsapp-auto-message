@@ -52,7 +52,7 @@ const checkAndSendSchedules = async () => {
     // Find all schedules that are due (next_run_at <= now) and are in pending or active status
     const dueSchedules = await Schedule.find({
       status: { $in: ['pending', 'active'] },
-      next_run_at: { $lte: nowISO }
+      next_run_at: { $ne: null, $lte: nowISO }
     });
 
     if (dueSchedules.length > 0) {
@@ -60,13 +60,13 @@ const checkAndSendSchedules = async () => {
     }
 
     for (const schedule of dueSchedules) {
-      const { _id: id, admin_id, broadcast_jid, message, period, next_run_at } = schedule;
+      const { _id: id, admin_id, broadcast_jid, message, period, next_run_at, media } = schedule;
       
       try {
         console.log(`[Scheduler] Attempting to send schedule ID: ${id} to ${broadcast_jid} (Admin ID: ${admin_id})`);
         
         // Deliver message
-        await whatsappService.sendMessage(admin_id, broadcast_jid, message);
+        await whatsappService.sendMessage(admin_id, broadcast_jid, message, media);
 
         // Calculate next run if recurring
         if (period === 'once') {
