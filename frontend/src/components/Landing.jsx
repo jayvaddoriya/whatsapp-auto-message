@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   MessageSquare, Calendar, Layers, Shield, Image, Globe, 
   Phone, ArrowRight, CheckCircle, Sparkles, Video, FileText,
@@ -10,6 +10,28 @@ export default function Landing({
   lang, theme, toggleLang, toggleTheme, onAccessDashboard 
 }) {
   const demoUrl = "https://wa.me/919512630583?text=Hi,%20I'm%20interested%20in%20a%20demo%20of%20the%20WhatsApp%20Auto-Message%20Broadcast%20Scheduler";
+
+  // State for Scroll to Top Button
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   // State for FAQ Accordion
   const [activeFaq, setActiveFaq] = useState(null);
@@ -1363,6 +1385,15 @@ export default function Landing({
         </div>
       </section>
 
+      {/* Scroll to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`scroll-to-top-btn ${showScrollTop ? 'visible' : ''}`}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp size={20} />
+      </button>
+
       {/* Global CSS Responsive Overrides */}
       <style>{`
         @keyframes floatImage {
@@ -1375,18 +1406,20 @@ export default function Landing({
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1.25rem 5%;
+          padding: 1rem 5%;
           border-bottom: 1px solid var(--color-border);
-          backdrop-filter: blur(10px);
-          position: sticky;
+          backdrop-filter: blur(12px);
+          position: fixed;
           top: 0;
-          z-index: 100;
-          background-color: ${theme === 'dark' ? 'rgba(8, 12, 22, 0.5)' : 'rgba(241, 245, 249, 0.7)'};
-          transition: padding var(--transition-fast);
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          background-color: ${theme === 'dark' ? 'rgba(8, 12, 22, 0.7)' : 'rgba(241, 245, 249, 0.75)'};
+          transition: all var(--transition-fast);
         }
         
         .hero-grid {
-          padding: 5rem 5% 4rem 5%;
+          padding: 9rem 5% 4rem 5%;
           display: grid;
           grid-template-columns: 1.1fr 0.9fr;
           gap: 4rem;
@@ -1414,7 +1447,7 @@ export default function Landing({
           .hero-grid {
             grid-template-columns: 1fr !important;
             gap: 3rem !important;
-            padding: 3rem 1.25rem 3rem 1.25rem !important;
+            padding: 7.5rem 1.25rem 3rem 1.25rem !important;
             text-align: center;
           }
           .hero-grid-left {
@@ -1759,6 +1792,53 @@ export default function Landing({
           transform: translateY(-2px);
           border-color: var(--accent-teal) !important;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        /* Floating Scroll to Top Button - Bottom Left */
+        .scroll-to-top-btn {
+          position: fixed;
+          bottom: 2rem;
+          left: 2rem; /* Strictly bottom-left as requested */
+          width: 46px;
+          height: 46px;
+          border-radius: 50%;
+          background: ${theme === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.7)'};
+          backdrop-filter: blur(10px);
+          border: 1px solid var(--color-border);
+          color: var(--text-primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 999;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(15px);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .scroll-to-top-btn.visible {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        .scroll-to-top-btn:hover {
+          background: var(--accent-gradient);
+          color: #fff;
+          border-color: transparent;
+          box-shadow: 0 10px 25px var(--accent-glow);
+          transform: translateY(-3px);
+        }
+        .scroll-to-top-btn:active {
+          transform: translateY(-1px);
+        }
+        @media (max-width: 768px) {
+          .scroll-to-top-btn {
+            bottom: 1.5rem;
+            left: 1.5rem;
+            width: 40px;
+            height: 40px;
+          }
         }
       `}</style>
     </div>
