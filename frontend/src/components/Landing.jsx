@@ -25,6 +25,9 @@ export default function Landing({
       heroSubtitle: "A premium, stateless scheduling and automation platform. Deliver messages, rich media, and customized campaigns with built-in anti-ban protection.",
       bookDemo: "Book a Demo",
       accessDashboard: "Access Dashboard",
+      statSecurity: "100% Secure Sessions",
+      statDelay: "15s Delay Protection",
+      statOpen: "98% Open Rates",
       
       // Scenario workflow section
       workflowTitle: "Get Started in 3 Simple Steps",
@@ -90,6 +93,9 @@ export default function Landing({
       heroSubtitle: "એક પ્રીમિયમ, સ્ટેટલેસ શેડ્યુલિંગ અને ઓટોમેશન પ્લેટફોર્મ. બિલ્ટ-ઇન એન્ટી-બેન પ્રોટેક્શન સાથે સંદેશા, મીડિયા અને કસ્ટમાઇઝ્ડ કેમ્પેઈન મોકલો.",
       bookDemo: "ડેમો બુક કરો",
       accessDashboard: "ડેશબોર્ડ ખોલો",
+      statSecurity: "૧૦૦% સુરક્ષિત સત્રો",
+      statDelay: "૧૫ સેકન્ડ વિલંબ સુરક્ષા",
+      statOpen: "૯૮% ઓપન રેટ્સ",
       
       // Scenario workflow section
       workflowTitle: "ફક્ત ૩ સરળ સ્ટેપ્સમાં શરૂ કરો",
@@ -1011,6 +1017,31 @@ export default function Landing({
         @keyframes floatImage {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
+        }
+
+        /* General Styles */
+        .landing-nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.25rem 5%;
+          border-bottom: 1px solid var(--color-border);
+          backdrop-filter: blur(10px);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background-color: ${theme === 'dark' ? 'rgba(8, 12, 22, 0.5)' : 'rgba(241, 245, 249, 0.7)'};
+          transition: padding var(--transition-fast);
+        }
+        
+        .hero-grid {
+          padding: 5rem 5% 4rem 5%;
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 4rem;
+          align-items: center;
+          max-width: 1280px;
+          margin: 0 auto;
         }
         
         /* Navbar Responsiveness */
