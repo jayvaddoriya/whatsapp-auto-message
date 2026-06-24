@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   MessageSquare, Calendar, Layers, Shield, Image, Globe, 
   Phone, ArrowRight, CheckCircle, Sparkles, Video, FileText,
-  HelpCircle, Check, Play, Clock, AlertTriangle, ChevronDown, ChevronUp
+  HelpCircle, Clock, AlertTriangle, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { HeaderControls } from '../App';
 
@@ -128,7 +128,7 @@ export default function Landing({
       feature4Title: "એન્ટી-બેન પ્રોટેક્શન",
       feature4Desc: "મલ્ટિ-કોન્ટેક્ટ લિસ્ટ પર સંદેશાઓ વચ્ચે આપમેળે ૧૫-સેકન્ડનો વિલંબ, જે એકાઉન્ટને પ્રતિબંધોથી બચાવે છે.",
       feature5Title: "સ્ટેટલેસ સુરક્ષા",
-      feature5Desc: "લોગિન સત્રો અને કનેક્શન્સ સીધા જ MongoDB માં સુરક્ષિત સેવ થાય છે, જેથી સર્વર રીસ્ટાર્ટ થવા પર કનેક્શન તૂટતું નથી.",
+      feature5Desc: "લોગિન સત્રો અને કનેક્શન્સ સીધા જ MongoDB માં સુરક્ષિત સેવ થાય છે, જેથી સરોવર રીસ્ટાર્ટ થવા પર કનેક્શન તૂટતું નથી.",
       feature6Title: "દ્વિભાષી ઇન્ટરફેસ",
       feature6Desc: "અંગ્રેજી અને ગુજરાતી માટે સંપૂર્ણ સ્થાનિક સપોર્ટ. સરળ ભાષા બદલવાની સુવિધા સાથે ઉપલબ્ધ.",
 
@@ -137,7 +137,7 @@ export default function Landing({
       faqSubtitle: "વ્હોટ્સએપ ઓટો-મેસેજ બ્રોડકાસ્ટ શેડ્યૂલર વિશે સામાન્ય પ્રશ્નો અને જવાબો.",
       faqQ1: "શું આ સોફ્ટવેર વાપરવાથી મારું વ્હોટ્સએપ એકાઉન્ટ બંધ (બૅન) થઈ જશે?",
       faqA1: "બીજા સામાન્ય ટૂલ્સ એક સાથે સેંકડો મેસેજ મોકલે છે જે સ્પામ ગણાય છે. આપણી સિસ્ટમ મેસેજ વચ્ચે ફરજિયાત ૧૫ સેકન્ડનો વિલંબ રાખે છે. આ પ્રક્રિયા કુદરતી હોવાથી એકાઉન્ટ બંધ થવાનું જોખમ નહિવત થઈ જાય છે.",
-      faqQ2: "મીડિયા ફાઇલો માટે કયા ફોર્મેટ અને સાઇઝ સપોર્ટેડ છે?",
+      faqQ2: "મીડિયા ફાઇલો માટે કયા ફોર્મેટ અને સાઇઝ સપોર્ટેધ છે?",
       faqA2: "તમે ૧૫MB સુધીના ફોટા (JPG, PNG, GIF) અને વિડિયો (MP4) અપલોડ કરી શકો છો. આ ફાઇલો ડેટાબેઝમાં સેવ થાય છે અને ટેક્સ્ટ કૅપ્શન સાથે તમારા સંપર્કોને મોકલવામાં આવે છે.",
       faqQ3: "શું મારે એક્સેલ ફાઇલને કોઈ ખાસ રીતે ફોર્મેટ કરવી પડશે?",
       faqA3: "ના. અમારું ઇન્ટેલિજન્ટ પાર્સર એક્સેલ (.xlsx, .xls) અથવા CSV ફાઇલના દરેક સેલને સ્કેન કરે છે. તે આપમેળે વધારાના અક્ષરો (+, -, કૌંસ, સ્પેસ) દૂર કરીને ૮ થી ૧૫ આંકડાના માન્ય નંબરો શોધી લે છે.",
@@ -174,18 +174,7 @@ export default function Landing({
       <div className="bg-gradient-glow"></div>
 
       {/* Header/Navbar */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1.25rem 5%',
-        borderBottom: '1px solid var(--color-border)',
-        backdropFilter: 'blur(10px)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        backgroundColor: theme === 'dark' ? 'rgba(8, 12, 22, 0.5)' : 'rgba(241, 245, 249, 0.7)'
-      }}>
+      <nav className="landing-nav">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{
             background: 'var(--accent-gradient)',
@@ -198,7 +187,7 @@ export default function Landing({
           }}>
             <MessageSquare size={20} style={{ color: '#fff' }} />
           </div>
-          <span style={{
+          <span className="landing-nav-logo-text" style={{
             fontSize: '1.25rem',
             fontWeight: 800,
             letterSpacing: '-0.5px',
@@ -215,7 +204,7 @@ export default function Landing({
           
           <button 
             onClick={onAccessDashboard}
-            className="btn btn-secondary"
+            className="btn btn-secondary landing-nav-btn"
             style={{
               padding: '0.45rem 1rem',
               fontSize: '0.85rem',
@@ -230,16 +219,8 @@ export default function Landing({
       </nav>
 
       {/* Hero Section */}
-      <section style={{
-        padding: '5rem 5% 4rem 5%',
-        display: 'grid',
-        gridTemplateColumns: '1.1fr 0.9fr',
-        gap: '4rem',
-        alignItems: 'center',
-        maxWidth: '1280px',
-        margin: '0 auto'
-      }} className="hero-grid">
-        <div>
+      <section className="hero-grid">
+        <div className="hero-grid-left">
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -258,10 +239,10 @@ export default function Landing({
           </div>
 
           <h1 style={{
-            fontSize: '3rem',
+            fontSize: '3.25rem',
             fontWeight: 800,
             lineHeight: 1.15,
-            letterSpacing: '-1px',
+            letterSpacing: '-1.5px',
             marginBottom: '1.5rem',
             color: 'var(--text-primary)'
           }}>
@@ -278,7 +259,7 @@ export default function Landing({
             {t.heroSubtitle}
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="hero-buttons" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <a 
               href={demoUrl}
               target="_blank"
@@ -317,25 +298,25 @@ export default function Landing({
           </div>
 
           {/* Mini Stats */}
-          <div style={{
+          <div className="hero-stats" style={{
             display: 'flex',
             gap: '2rem',
             marginTop: '3.5rem',
             borderTop: '1px solid var(--color-border)',
             paddingTop: '2rem'
-          }} className="hero-stats">
+          }}>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-teal)' }}>98%</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-teal)' }}>98%</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{t.statOpen}</div>
             </div>
-            <div style={{ width: '1px', background: 'var(--color-border)' }}></div>
+            <div className="hero-stats-divider" style={{ width: '1px', background: 'var(--color-border)' }}></div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-green)' }}>15s</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-green)' }}>15s</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{t.statDelay}</div>
             </div>
-            <div style={{ width: '1px', background: 'var(--color-border)' }}></div>
+            <div className="hero-stats-divider" style={{ width: '1px', background: 'var(--color-border)' }}></div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>100%</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>100%</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{t.statSecurity}</div>
             </div>
           </div>
@@ -346,7 +327,8 @@ export default function Landing({
           position: 'relative',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          width: '100%'
         }}>
           {/* Glass Glow effect behind image - Only in dark mode */}
           {theme === 'dark' && (
@@ -422,12 +404,7 @@ export default function Landing({
         </div>
 
         {/* Workflow Infographic Graphic */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: '4rem',
-          position: 'relative'
-        }}>
+        <div className="workflow-desktop-image">
           <img 
             src="/software_workflow.png" 
             alt="WhatsApp Scheduler 3-Step Workflow Infographic" 
@@ -446,7 +423,7 @@ export default function Landing({
         {/* Detailed steps columns */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '2.5rem'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -522,11 +499,11 @@ export default function Landing({
           maxWidth: '1280px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '0.9fr 1.1fr',
+          gridTemplateColumns: '0.95fr 1.05fr',
           gap: '4rem',
           alignItems: 'center'
         }} className="hero-grid">
-          <div>
+          <div className="hero-grid-left">
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -572,7 +549,8 @@ export default function Landing({
               padding: '1rem',
               borderRadius: '12px',
               fontSize: '0.9rem',
-              color: 'var(--text-secondary)'
+              color: 'var(--text-secondary)',
+              textAlign: 'left'
             }}>
               <AlertTriangle size={18} style={{ color: 'var(--color-warning)', flexShrink: 0, marginTop: '0.1rem' }} />
               <span>{t.timelineFooter}</span>
@@ -580,7 +558,7 @@ export default function Landing({
           </div>
 
           {/* Timeline Visual Card */}
-          <div className="glass-card" style={{
+          <div className="glass-card timeline-visual-card" style={{
             padding: '2.5rem 2rem',
             border: '1px solid var(--color-border)',
             display: 'flex',
@@ -590,7 +568,7 @@ export default function Landing({
           }}>
             {/* Timeline Item 1 */}
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{
+              <div className="timeline-step-badge" style={{
                 background: 'var(--accent-teal)',
                 color: '#fff',
                 fontSize: '0.75rem',
@@ -602,17 +580,17 @@ export default function Landing({
                 boxShadow: '0 0 10px rgba(6, 182, 212, 0.2)'
               }}>{t.timelineStep1}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: 'var(--accent-green)' }} />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep1Text}</span>
+                <CheckCircle size={15} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+                <span className="timeline-step-text" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep1Text}</span>
               </div>
             </div>
 
             {/* Connecting Line */}
-            <div style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
+            <div className="timeline-connecting-line" style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
 
             {/* Timeline Item 2 */}
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{
+              <div className="timeline-step-badge" style={{
                 background: 'var(--accent-teal)',
                 color: '#fff',
                 fontSize: '0.75rem',
@@ -624,17 +602,17 @@ export default function Landing({
                 boxShadow: '0 0 10px rgba(6, 182, 212, 0.2)'
               }}>{t.timelineStep2}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: 'var(--accent-green)' }} />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep2Text}</span>
+                <CheckCircle size={15} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+                <span className="timeline-step-text" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep2Text}</span>
               </div>
             </div>
 
             {/* Connecting Line */}
-            <div style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
+            <div className="timeline-connecting-line" style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
 
             {/* Timeline Item 3 */}
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{
+              <div className="timeline-step-badge" style={{
                 background: 'var(--accent-teal)',
                 color: '#fff',
                 fontSize: '0.75rem',
@@ -646,17 +624,17 @@ export default function Landing({
                 boxShadow: '0 0 10px rgba(6, 182, 212, 0.2)'
               }}>{t.timelineStep3}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: 'var(--accent-green)' }} />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep3Text}</span>
+                <CheckCircle size={15} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+                <span className="timeline-step-text" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep3Text}</span>
               </div>
             </div>
 
             {/* Connecting Line */}
-            <div style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
+            <div className="timeline-connecting-line" style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
 
             {/* Timeline Item 4 */}
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{
+              <div className="timeline-step-badge" style={{
                 background: 'var(--accent-teal)',
                 color: '#fff',
                 fontSize: '0.75rem',
@@ -668,17 +646,17 @@ export default function Landing({
                 boxShadow: '0 0 10px rgba(6, 182, 212, 0.2)'
               }}>{t.timelineStep4}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: 'var(--accent-green)' }} />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep4Text}</span>
+                <CheckCircle size={15} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+                <span className="timeline-step-text" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep4Text}</span>
               </div>
             </div>
 
             {/* Connecting Line */}
-            <div style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
+            <div className="timeline-connecting-line" style={{ width: '2px', height: '12px', background: 'var(--color-border)', marginLeft: '47px', marginTop: '-0.75rem', marginBottom: '-0.75rem' }}></div>
 
             {/* Timeline Item 5 */}
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{
+              <div className="timeline-step-badge" style={{
                 background: 'var(--accent-green)',
                 color: '#fff',
                 fontSize: '0.75rem',
@@ -690,8 +668,8 @@ export default function Landing({
                 boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)'
               }}>{t.timelineStep5}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: 'var(--accent-green)' }} />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep5Text}</span>
+                <CheckCircle size={15} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+                <span className="timeline-step-text" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t.timelineStep5Text}</span>
               </div>
             </div>
           </div>
@@ -722,13 +700,7 @@ export default function Landing({
           </p>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-          maxWidth: '1280px',
-          margin: '0 auto'
-        }}>
+        <div className="features-grid">
           {/* Feature 1 */}
           <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{
@@ -898,12 +870,9 @@ export default function Landing({
             return (
               <div 
                 key={index} 
-                className="glass-card" 
+                className="glass-card faq-card" 
                 style={{ 
-                  padding: '1.25rem 1.75rem', 
-                  cursor: 'pointer',
-                  border: isOpen ? '1px solid var(--accent-teal)' : '1px solid var(--color-border)',
-                  transition: 'all 0.25s ease'
+                  border: isOpen ? '1px solid var(--accent-teal)' : '1px solid var(--color-border)'
                 }}
                 onClick={() => toggleFaq(index)}
               >
@@ -930,7 +899,8 @@ export default function Landing({
                     borderTop: '1px solid var(--color-border)',
                     fontSize: '0.95rem',
                     color: 'var(--text-secondary)',
-                    lineHeight: 1.6
+                    lineHeight: 1.6,
+                    textAlign: 'left'
                   }}>
                     {faq.a}
                   </div>
@@ -942,7 +912,7 @@ export default function Landing({
       </section>
 
       {/* Footer / Call to Action */}
-      <section style={{
+      <section className="cta-section" style={{
         padding: '6rem 5% 5rem 5%',
         textAlign: 'center',
         position: 'relative'
@@ -975,7 +945,8 @@ export default function Landing({
             display: 'inline-flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '1rem'
+            gap: '1rem',
+            width: '100%'
           }}>
             <a 
               href={demoUrl}
@@ -985,6 +956,7 @@ export default function Landing({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.75rem',
                 padding: '0.9rem 2.25rem',
                 borderRadius: '30px',
@@ -992,7 +964,9 @@ export default function Landing({
                 fontWeight: 700,
                 boxShadow: '0 10px 30px var(--accent-glow)',
                 textDecoration: 'none',
-                color: '#fff'
+                color: '#fff',
+                maxWidth: '320px',
+                width: '100%'
               }}
             >
               <MessageSquare size={18} />
@@ -1002,6 +976,7 @@ export default function Landing({
             <div style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.5rem',
               fontSize: '0.9rem',
               color: 'var(--text-secondary)',
@@ -1009,7 +984,9 @@ export default function Landing({
               background: theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)',
               padding: '0.5rem 1rem',
               borderRadius: '20px',
-              border: '1px solid var(--color-border)'
+              border: '1px solid var(--color-border)',
+              maxWidth: '260px',
+              width: '100%'
             }}>
               <Phone size={14} style={{ color: 'var(--accent-teal)' }} />
               <span style={{ fontWeight: 600 }}>+91 9512630583</span>
@@ -1028,6 +1005,155 @@ export default function Landing({
           {t.copyright}
         </div>
       </section>
+
+      {/* Global CSS Responsive Overrides */}
+      <style>{`
+        @keyframes floatImage {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        /* Navbar Responsiveness */
+        @media (max-width: 600px) {
+          .landing-nav {
+            padding: 0.75rem 1rem !important;
+          }
+          .landing-nav-logo-text {
+            display: none !important;
+          }
+          .landing-nav-btn {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.75rem !important;
+          }
+        }
+
+        /* Hero Grid Responsiveness */
+        @media (max-width: 900px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 3rem !important;
+            padding: 3rem 1.25rem 3rem 1.25rem !important;
+            text-align: center;
+          }
+          .hero-grid-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .hero-grid h1 {
+            font-size: 2.25rem !important;
+            letter-spacing: -0.75px !important;
+          }
+          .hero-grid p {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .hero-buttons {
+            justify-content: center;
+            width: 100%;
+          }
+          .hero-stats {
+            justify-content: center;
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero-grid h1 {
+            font-size: 1.85rem !important;
+          }
+          .hero-buttons {
+            flex-direction: column;
+            width: 100%;
+          }
+          .hero-buttons a, .hero-buttons button {
+            width: 100% !important;
+            justify-content: center;
+          }
+          .hero-stats {
+            flex-direction: column !important;
+            align-items: center;
+            gap: 1.5rem !important;
+          }
+          .hero-stats-divider {
+            display: none !important;
+          }
+        }
+
+        /* Workflow Graphic Responsiveness */
+        .workflow-desktop-image {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 4rem;
+        }
+        @media (max-width: 768px) {
+          .workflow-desktop-image {
+            display: none !important;
+          }
+        }
+
+        /* Features Grid Responsiveness */
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+          gap: 1.5rem;
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+        @media (max-width: 480px) {
+          .features-grid {
+            grid-template-columns: 1fr !important;
+            padding: 0 0.5rem;
+          }
+        }
+
+        /* Timeline Simulation Responsiveness */
+        @media (max-width: 480px) {
+          .timeline-visual-card {
+            padding: 1.5rem 1rem !important;
+            gap: 1rem !important;
+          }
+          .timeline-step-badge {
+            min-width: 80px !important;
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.5rem !important;
+          }
+          .timeline-step-text {
+            font-size: 0.85rem !important;
+          }
+          .timeline-connecting-line {
+            margin-left: 40px !important;
+          }
+        }
+
+        /* FAQ Accordion Responsiveness */
+        .faq-card {
+          padding: 1.25rem 1.75rem;
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        @media (max-width: 600px) {
+          .faq-card {
+            padding: 1rem 1.25rem !important;
+          }
+          .faq-card h3 {
+            font-size: 0.95rem !important;
+          }
+          .faq-card p {
+            font-size: 0.85rem !important;
+          }
+        }
+
+        /* CTA Section Responsiveness */
+        @media (max-width: 600px) {
+          .cta-section h2 {
+            font-size: 1.85rem !important;
+          }
+          .cta-section p {
+            font-size: 0.95rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
