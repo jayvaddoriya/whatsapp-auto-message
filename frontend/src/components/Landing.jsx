@@ -227,7 +227,7 @@ export default function Landing({
       {/* Hero Section */}
       <section className="hero-grid">
         <div className="hero-grid-left">
-          <div style={{
+          <div className="animate-fade-in-up" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
@@ -244,7 +244,7 @@ export default function Landing({
             <span>Next-Gen WhatsApp Broadcasting</span>
           </div>
 
-          <h1 style={{
+          <h1 className="animate-fade-in-up delay-100" style={{
             fontSize: '3.25rem',
             fontWeight: 800,
             lineHeight: 1.15,
@@ -255,7 +255,7 @@ export default function Landing({
             {t.heroTitle}
           </h1>
 
-          <p style={{
+          <p className="animate-fade-in-up delay-200" style={{
             fontSize: '1.1rem',
             lineHeight: 1.6,
             color: 'var(--text-secondary)',
@@ -265,7 +265,7 @@ export default function Landing({
             {t.heroSubtitle}
           </p>
 
-          <div className="hero-buttons" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="hero-buttons animate-fade-in-up delay-300" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <a 
               href={demoUrl}
               target="_blank"
@@ -304,7 +304,7 @@ export default function Landing({
           </div>
 
           {/* Mini Stats */}
-          <div className="hero-stats" style={{
+          <div className="hero-stats animate-fade-in-up delay-400" style={{
             display: 'flex',
             gap: '2rem',
             marginTop: '3.5rem',
@@ -351,6 +351,7 @@ export default function Landing({
           <img 
             src="/landing_hero.png" 
             alt="WhatsApp Scheduler Dashboard Illustration" 
+            className="hero-image-animate"
             style={{
               width: '100%',
               maxWidth: '420px',
@@ -361,8 +362,7 @@ export default function Landing({
               boxShadow: theme === 'dark' 
                 ? '0 20px 45px rgba(0, 0, 0, 0.5)' 
                 : '0 20px 45px rgba(8, 12, 22, 0.15)',
-              zIndex: 1,
-              animation: 'floatImage 6s ease-in-out infinite'
+              zIndex: 1
             }}
           />
         </div>
@@ -432,7 +432,7 @@ export default function Landing({
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '2.5rem'
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="workflow-step-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -452,7 +452,7 @@ export default function Landing({
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="workflow-step-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -472,7 +472,7 @@ export default function Landing({
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="workflow-step-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -1188,6 +1188,123 @@ export default function Landing({
           .cta-section p {
             font-size: 0.95rem !important;
           }
+        }
+
+        /* Mount Animations */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+        .delay-500 { animation-delay: 500ms; }
+
+        .hero-image-animate {
+          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 200ms both,
+                     floatImage 6s ease-in-out 1s infinite;
+        }
+
+        /* Hover Transitions & micro-interactions */
+        .features-grid .glass-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .features-grid .glass-card:hover {
+          transform: translateY(-6px);
+          border-color: var(--accent-teal) !important;
+          box-shadow: ${theme === 'dark' 
+            ? '0 15px 30px rgba(6, 182, 212, 0.15)' 
+            : '0 15px 30px rgba(6, 182, 212, 0.08)'} !important;
+        }
+
+        .workflow-step-card {
+          padding: 1.5rem;
+          border-radius: var(--radius-lg);
+          border: 1px solid transparent;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .workflow-step-card:hover {
+          background-color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)'};
+          border-color: var(--color-border);
+          transform: translateY(-4px);
+        }
+
+        .timeline-visual-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .timeline-visual-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+          }
+        }
+        .timeline-step-badge {
+          animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        /* Interactive Buttons Hover overrides */
+        .btn-primary {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .btn-primary:hover {
+          transform: scale(1.03) translateY(-1px);
+          box-shadow: 0 10px 28px var(--accent-glow) !important;
+        }
+        .btn-secondary {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                      border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                      background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .btn-secondary:hover {
+          transform: scale(1.02) translateY(-1px);
+          border-color: var(--accent-teal) !important;
+        }
+
+        /* Infographic Hover effect */
+        .workflow-desktop-image img {
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .workflow-desktop-image img:hover {
+          transform: scale(1.01) translateY(-2px);
+          box-shadow: ${theme === 'dark'
+            ? '0 20px 40px rgba(16, 185, 129, 0.12)'
+            : '0 20px 40px rgba(16, 185, 129, 0.06)'} !important;
+          border-color: var(--accent-green) !important;
+        }
+
+        /* FAQ Card Hover Glow */
+        .faq-card {
+          transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+        }
+        .faq-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--accent-teal) !important;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
         }
       `}</style>
     </div>
