@@ -494,11 +494,7 @@ export default function Landing({
         </div>
 
         {/* Detailed steps columns */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '2.5rem'
-        }}>
+        <div className="workflow-steps-grid">
           <div className="workflow-step-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{
               display: 'flex',
@@ -1475,6 +1471,22 @@ export default function Landing({
         @media (max-width: 768px) {
           .workflow-desktop-image {
             display: none !important;
+          }
+        }
+
+        /* Workflow Steps Grid */
+        .workflow-steps-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2.5rem;
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+          .workflow-steps-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.75rem;
+            padding: 0 0.5rem;
           }
         }
 
