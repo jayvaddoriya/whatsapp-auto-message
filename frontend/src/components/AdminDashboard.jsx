@@ -3,7 +3,9 @@ import {
   QrCode, Calendar, Clock, Send, Trash2, Edit2, Play, CheckCircle, 
   XCircle, AlertCircle, LogOut, MessageSquare, RefreshCw, Layers, Plus, X, Search
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { HeaderControls } from '../App';
+
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -34,6 +36,9 @@ export default function AdminDashboard({
   const [customNumbersText, setCustomNumbersText] = useState('');
   const [submittingCustom, setSubmittingCustom] = useState(false);
   const [customError, setCustomError] = useState('');
+  const [excelImportStatus, setExcelImportStatus] = useState('');
+  const excelInputRef = useRef(null);
+
 
   // Contacts states
   const [contacts, setContacts] = useState([]);
@@ -230,6 +235,90 @@ export default function AdminDashboard({
     setCustomName('');
     setCustomNumbersText('');
     setCustomError('');
+    setExcelImportStatus('');
+    if (excelInputRef.current) {
+      excelInputRef.current.value = '';
+    }
+  };
+
+  // Handle Excel/CSV File Upload & Parsing
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setExcelImportStatus('');
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // Parse sheet to JSON rows
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        // Extract numbers from all cells
+        const foundNumbers = [];
+        rows.forEach(row => {
+          if (Array.isArray(row)) {
+            row.forEach(cell => {
+              if (cell !== null && cell !== undefined) {
+                const str = String(cell).trim();
+                // Clean formatting characters
+                const cleaned = str.replace(/[\s\-\(\)\+]/g, '');
+                // Validate digits length 8 to 15
+                if (/^\d{8,15}$/.test(cleaned)) {
+                  foundNumbers.push(cleaned);
+                }
+              }
+            });
+          }
+        });
+
+        // Deduplicate numbers
+        const uniqueNumbers = Array.from(new Set(foundNumbers));
+
+        if (uniqueNumbers.length === 0) {
+          setExcelImportStatus(
+            lang === 'en'
+              ? 'No valid phone numbers found in the file.'
+              : 'ફાઇલમાં કોઈ માન્ય ફોન નંબરો મળ્યા નથી.'
+          );
+          return;
+        }
+
+        // Merge and set numbers
+        setCustomNumbersText(prev => {
+          const currentNums = prev
+            .split(/[\n,]/)
+            .map(n => n.trim())
+            .filter(n => n.length > 0);
+          
+          const combined = Array.from(new Set([...currentNums, ...uniqueNumbers]));
+          return combined.join('\n');
+        });
+
+        setExcelImportStatus(
+          lang === 'en'
+            ? `Successfully imported ${uniqueNumbers.length} unique numbers from ${file.name}`
+            : `સફળતાપૂર્વક ${file.name} માંથી ${uniqueNumbers.length} અનન્ય નંબરો આયાત કર્યા`
+        );
+
+        // Reset file input
+        if (excelInputRef.current) {
+          excelInputRef.current.value = '';
+        }
+      } catch (err) {
+        console.error('Excel parse error:', err);
+        setExcelImportStatus(
+          lang === 'en'
+            ? 'Error parsing Excel file. Please ensure it is a valid .xlsx, .xls, or .csv file.'
+            : 'એક્સેલ ફાઇલ પાર્સ કરવામાં ભૂલ. કૃપા કરીને ખાતરી કરો કે તે એક માન્ય .xlsx, .xls અથવા .csv ફાઇલ છે.'
+        );
+      }
+    };
+    reader.readAsArrayBuffer(file);
   };
 
   // Create a new custom list
@@ -272,6 +361,10 @@ export default function AdminDashboard({
       setCustomName('');
       setCustomNumbersText('');
       setEditingCustomList(null);
+      setExcelImportStatus('');
+      if (excelInputRef.current) {
+        excelInputRef.current.value = '';
+      }
       
       fetchCustomLists();
       fetchBroadcasts();
@@ -285,6 +378,7 @@ export default function AdminDashboard({
       setSubmittingCustom(false);
     }
   };
+
 
   // Delete a custom list
   const handleDeleteCustomList = async (listId) => {
@@ -896,6 +990,41 @@ export default function AdminDashboard({
                     />
                   </div>
 
+                  <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      {lang === 'en' ? 'Import from Excel / CSV (Optional)' : 'એક્સેલ / CSV માંથી આયાત કરો (વૈકલ્પિક)'}
+                    </label>
+                    <input
+                      type="file"
+                      ref={excelInputRef}
+                      accept=".xlsx,.xls,.csv"
+                      onChange={handleExcelImport}
+                      className="form-input"
+                      style={{ fontSize: '0.85rem', padding: '0.5rem' }}
+                    />
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.25rem' }}>
+                      {lang === 'en' 
+                        ? 'Select an Excel (.xlsx, .xls) or CSV file. All valid numbers will be extracted.' 
+                        : 'એક્સેલ (.xlsx, .xls) અથવા CSV ફાઇલ પસંદ કરો. બધા માન્ય નંબરો આપમેળે ખેંચવામાં આવશે.'}
+                    </span>
+                    {excelImportStatus && (
+                      <div style={{
+                        marginTop: '0.5rem',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        color: excelImportStatus.includes('Successfully') || excelImportStatus.includes('સફળતાપૂર્વક') 
+                          ? 'var(--color-success)' 
+                          : 'var(--color-error)',
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        padding: '0.4rem 0.6rem',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                      }}>
+                        {excelImportStatus}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                     <label className="form-label">{lang === 'en' ? 'Recipient Phone Numbers' : 'પ્રાપ્તકર્તાના ફોન નંબરો'}</label>
                     <textarea
@@ -910,6 +1039,7 @@ export default function AdminDashboard({
                       {t('numbersHelp')}
                     </span>
                   </div>
+
 
                   <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
                     {editingCustomList && (
