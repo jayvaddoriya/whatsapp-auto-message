@@ -93,7 +93,8 @@ const translations = {
     loadingText: "Checking active session...",
     loadingAdmins: "Loading administrators...",
     loadingSchedules: "Retrieving schedule table...",
-    loadingCustom: "Loading custom lists..."
+    loadingCustom: "Loading custom lists...",
+    backToHome: "Back to Home"
   },
   gu: {
     title: "વોટ્સએપ ઓટોબ્રોડકાસ્ટ",
@@ -189,7 +190,8 @@ const translations = {
     loadingText: "સક્રિય સત્ર તપાસી રહ્યું છે...",
     loadingAdmins: "એડમિન્સ લોડ થઈ રહ્યા છે...",
     loadingSchedules: "શેડ્યૂલ કોષ્ટક મેળવી રહ્યું છે...",
-    loadingCustom: "કસ્ટમ યાદીઓ લોડ થઈ રહી છે..."
+    loadingCustom: "કસ્ટમ યાદીઓ લોડ થઈ રહી છે...",
+    backToHome: "પાછા હોમ પર"
   }
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
+import Landing from './components/Landing';
 import SuperDashboard from './components/SuperDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import translations from './translations';
@@ -48,6 +49,7 @@ export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
   
   // Theme & Language Global States
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
@@ -159,14 +161,25 @@ export default function App() {
 
   // Router logic based on auth role
   if (!token || !user) {
-    return (
-      <div style={{ position: 'relative', minHeight: '100vh' }}>
-        {/* Floating header controls for login page */}
-        <div style={{ position: 'fixed', top: '1.25rem', right: '1.25rem', zIndex: 1000 }}>
-          <HeaderControls lang={lang} theme={theme} toggleLang={toggleLang} toggleTheme={toggleTheme} />
+    if (showLogin) {
+      return (
+        <div style={{ position: 'relative', minHeight: '100vh' }}>
+          {/* Floating header controls for login page */}
+          <div style={{ position: 'fixed', top: '1.25rem', right: '1.25rem', zIndex: 1000 }}>
+            <HeaderControls lang={lang} theme={theme} toggleLang={toggleLang} toggleTheme={toggleTheme} />
+          </div>
+          <Login onLoginSuccess={handleLoginSuccess} onBackToHome={() => setShowLogin(false)} t={t} />
         </div>
-        <Login onLoginSuccess={handleLoginSuccess} t={t} />
-      </div>
+      );
+    }
+    return (
+      <Landing 
+        lang={lang} 
+        theme={theme} 
+        toggleLang={toggleLang} 
+        toggleTheme={toggleTheme} 
+        onAccessDashboard={() => setShowLogin(true)} 
+      />
     );
   }
 

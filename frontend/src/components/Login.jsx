@@ -3,7 +3,7 @@ import { Mail, Lock, LogIn, MessageSquare, AlertCircle } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
-export default function Login({ onLoginSuccess, t }) {
+export default function Login({ onLoginSuccess, t, onBackToHome }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -183,11 +183,31 @@ export default function Login({ onLoginSuccess, t }) {
             ) : (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                 <LogIn size={18} />
-                {t('signIn')}
+                 {t('signIn')}
               </span>
             )}
           </button>
         </form>
+        {onBackToHome && (
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="btn btn-secondary w-full"
+            style={{
+              marginTop: '1rem',
+              padding: '0.85rem',
+              fontSize: '0.95rem',
+              fontWeight: 700,
+              borderWidth: '1px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            {t('backToHome')}
+          </button>
+        )}
       </div>
 
       <style>{`
