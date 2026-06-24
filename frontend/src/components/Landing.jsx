@@ -70,6 +70,33 @@ export default function Landing({
       feature6Title: "Dual Language Interface",
       feature6Desc: "Full native support for English and Gujarati. Smooth toggle for interface, alerts, and formatting.",
 
+      // Safety section
+      safetyTitle: "WhatsApp Safety & Broadcasting Guidelines",
+      safetySubtitle: "Our slow-sending queue protects your number, but following these standard safety practices is essential to avoid account blocks.",
+      safetyCard1Title: "Account Warm-Up",
+      safetyCard1Desc: "Avoid broadcasting 500 messages from a brand-new number. Warm up your account by sending 20-30 messages daily first, and gradually scale up.",
+      safetyCard2Title: "Opt-In & Opt-Out",
+      safetyCard2Desc: "Only broadcast to contacts who have saved your number or opted-in. Always include a simple exit note like 'Reply STOP to opt-out'.",
+      safetyCard3Title: "Two-Way Engagement",
+      safetyCard3Desc: "WhatsApp trusts numbers with two-way chats. Encourage replies by asking questions (e.g. 'Reply YES to receive the code') to boost your score.",
+      safetyCard4Title: "Avoid Spam Words",
+      safetyCard4Desc: "Do not blast highly promotional keywords or identical links repeatedly. Keep your content relevant, useful, and personalized.",
+      
+      // Policy Section
+      policyTitle: "Broadcasting Policy & Account Safety",
+      policySubtitle: "Understand WhatsApp's official policies and how our built-in safety engine protects your account when sending to large lists.",
+      policyCardTitle: "The 500-Contact Broadcast Policy",
+      policyCardQuestion: "Will my WhatsApp account get blocked if I send to 500 contacts?",
+      policyCardAnswer: "The short answer is no—provided you use our platform's built-in safeguards and follow standard policies. WhatsApp blocks accounts based on sending speed and user spam reports. Because our system enforces a mandatory 15-second delay, sending to 500 contacts is spread naturally over 2 hours, preventing automated spam triggers. However, to guarantee 100% safety, you must adhere to the official rules below.",
+      policyRule1Title: "Only Send to Opt-In Contacts",
+      policyRule1Desc: "Never broadcast unsolicited messages to strangers. If recipients report your number as spam, WhatsApp will block you regardless of sending speed.",
+      policyRule2Title: "Gradually Scale Your Volume",
+      policyRule2Desc: "If your number is brand new, start by sending 20-30 messages daily. Slowly warm up the account and increase your volume over 2-3 weeks before blasting to 500+ contacts.",
+      policyRule3Title: "Keep Messages Personalized",
+      policyRule3Desc: "Avoid blasting identical promotional text. Use our dynamic custom list templates to personalize names or content to look natural and organic.",
+      policyRule4Title: "Encourage Two-Way Chats",
+      policyRule4Desc: "WhatsApp trusts numbers that have mutual conversations. Ask questions or run interactive polls so recipients reply to you, boosting your number score.",
+
       // FAQ section
       faqTitle: "Frequently Asked Questions",
       faqSubtitle: "Everything you need to know about the WhatsApp Auto-Message Broadcast Scheduler.",
@@ -137,6 +164,33 @@ export default function Landing({
       feature5Desc: "લોગિન સત્રો અને કનેક્શન્સ સીધા જ MongoDB માં સુરક્ષિત સેવ થાય છે, જેથી સરોવર રીસ્ટાર્ટ થવા પર કનેક્શન તૂટતું નથી.",
       feature6Title: "દ્વિભાષી ઇન્ટરફેસ",
       feature6Desc: "અંગ્રેજી અને ગુજરાતી માટે સંપૂર્ણ સ્થાનિક સપોર્ટ. સરળ ભાષા બદલવાની સુવિધા સાથે ઉપલબ્ધ.",
+
+      // Safety section
+      safetyTitle: "વોટ્સએપ સુરક્ષા અને પ્રસારણ માર્ગદર્શિકા",
+      safetySubtitle: "અમારી ધીમી ગતિની મોકલવાની સિસ્ટમ તમારા નંબરને સુરક્ષિત રાખે છે, પરંતુ એકાઉન્ટ બ્લોકથી બચવા માટે આ સામાન્ય સુરક્ષા પદ્ધતિઓ અનુસરવી આવશ્યક છે.",
+      safetyCard1Title: "એકાઉન્ટ વોર્મ-અપ",
+      safetyCard1Desc: "નવા નંબરથી સીધા ૫૦૦ મેસેજ ન મોકલો. પહેલા દરરોજ ૨૦-૩૦ મેસેજ મોકલીને એકાઉન્ટ સક્રિય કરો, અને ધીમે-ધીમે સંખ્યા વધારો.",
+      safetyCard2Title: "ઓપ્ટ-ઇન અને ઓપ્ટ-આઉટ",
+      safetyCard2Desc: "ફક્ત એવા જ સંપર્કોને મોકલો જેમણે તમારો નંબર સેવ કર્યો હોય. હંમેશા મેસેજના અંતે 'દૂર કરવા માટે STOP મોકલો' એવું ઉમેરો.",
+      safetyCard3Title: "પરસ્પર વાતચીત (Engagement)",
+      safetyCard3Desc: "વોટ્સએપ એવા નંબરો પર વધુ ભરોસો કરે છે જેમાં સામેથી જવાબ આવે. પ્રશ્નો પૂછીને લોકોને જવાબ આપવા પ્રોત્સાહિત કરો.",
+      safetyCard4Title: "સ્પામ શબ્દોથી બચો",
+      safetyCard4Desc: "અતિશય પ્રમોશનલ શબ્દો અથવા એક સરખી લિંક્સ વારંવાર ન મોકલો. તમારું લખાણ સુસંગત, ઉપયોગી અને કસ્ટમાઇઝ્ડ રાખો.",
+      
+      // Policy Section
+      policyTitle: "બ્રોડકાસ્ટિંગ પોલિસી અને એન્ટી-બેન સુરક્ષા",
+      policySubtitle: "શું ૫૦૦+ સંપર્કોને બ્રોડકાસ્ટ કરવું સુરક્ષિત છે? વોટ્સએપની સત્તાવાર નીતિઓ અને આપણી બિલ્ટ-ઇન સુરક્ષા સિસ્ટમ વિશે જાણો.",
+      policyCardTitle: "૫૦૦-સંપર્ક બ્રોડકાસ્ટ પોલિસી",
+      policyCardQuestion: "જો હું ૫૦૦ સંપર્કોને મેસેજ મોકલું તો શું મારું વોટ્સએપ બંધ થઈ જશે?",
+      policyCardAnswer: "ટૂંકો જવાબ: જો તમે અમારી સિસ્ટમના સુરક્ષા નિયમો અને વોટ્સએપ પોલિસીનું પાલન કરશો તો નહીં થાય. વોટ્સએપ એકાઉન્ટ સ્પીડ અને લોકોના સ્પામ રિપોર્ટ પરથી બ્લોક કરે છે. આપણી સિસ્ટમ ફરજિયાત ૧૫-સેકન્ડનો વિલંબ રાખે છે, જેથી ૫૦૦ મેસેજ મોકલવામાં આશરે ૨ કલાક લાગે છે જે કુદરતી સ્પીડ છે. જો કે, સંપૂર્ણ સુરક્ષા માટે તમારે નીચેના સત્તાવાર નિયમોનું પાલન કરવું જ પડશે.",
+      policyRule1Title: "ફક્ત મંજૂરીવાળા સંપર્કોને જ મોકલો",
+      policyRule1Desc: "અજાણ્યા લોકોને ક્યારેય ન મોકલો. જો લોકો તમારો મેસેજ જોઈને સ્પામ રિપોર્ટ કરશે, તો ગમે તેટલી ધીમી સ્પીડ હશે તો પણ વોટ્સએપ એકાઉન્ટ બ્લોક કરી દેશે.",
+      policyRule2Title: "ધીમે-ધીમે વોલ્યુમ વધારો (Warm-up)",
+      policyRule2Desc: "જો તમારો નંબર નવો હોય, તો પહેલા રોજ ૨૦-૩૦ મેસેજ જ મોકલો. ૨-૩ અઠવાડિયા સુધી એકાઉન્ટની ક્ષમતા વધારો, પછી જ ૫૦૦+ સંપર્કોને એકસાથે મોકલો.",
+      policyRule3Title: "મેસેજ પર્સનલાઈઝ્ડ રાખો",
+      policyRule3Desc: "બધાને એક સરખો જ પ્રમોશનલ મેસેજ ન મોકલો. ડાયનેમિક લિસ્ટનો ઉપયોગ કરી નામ અથવા વિગતો બદલીને મેસેજ મોકલો જેથી તે ઓર્ગેનિક લાગે.",
+      policyRule4Title: "પરસ્પર વાતચીત વધારો",
+      policyRule4Desc: "વોટ્સએપ એવા એકાઉન્ટને ટ્રસ્ટેડ માને છે જેમાં સામસામે વાતચીત થતી હોય. લોકો જવાબ આપે તેવા આકર્ષક પ્રશ્નો અથવા પોલ મોકલી રિપ્લાય મેળવો.",
 
       // FAQ section
       faqTitle: "વારંવાર પૂછાતા પ્રશ્નો",
@@ -829,6 +883,294 @@ export default function Landing({
         </div>
       </section>
 
+      {/* Safety & Policy Guidelines Section */}
+      <section className="safety-section" style={{
+        padding: '6rem 5% 6rem 5%',
+        borderBottom: '1px solid var(--color-border)',
+        maxWidth: '1280px',
+        margin: '0 auto'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '700px',
+          margin: '0 auto 4rem auto'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            background: 'rgba(245, 158, 11, 0.08)',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            color: 'var(--color-warning)',
+            marginBottom: '1rem'
+          }}>
+            <Shield size={13} />
+            <span>Safety First Guidelines</span>
+          </div>
+          <h2 style={{
+            fontSize: '2.25rem',
+            fontWeight: 800,
+            marginBottom: '1rem',
+            letterSpacing: '-0.5px'
+          }}>
+            {t.safetyTitle}
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            {t.safetySubtitle}
+          </p>
+        </div>
+
+        <div className="safety-grid">
+          {/* Card 1 */}
+          <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-teal)' }}>
+              <Sparkles size={18} />
+              {t.safetyCard1Title}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {t.safetyCard1Desc}
+            </p>
+          </div>
+
+          {/* Card 2 */}
+          <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-green)' }}>
+              <CheckCircle size={18} />
+              {t.safetyCard2Title}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {t.safetyCard2Desc}
+            </p>
+          </div>
+
+          {/* Card 3 */}
+          <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#3b82f6' }}>
+              <MessageSquare size={18} />
+              {t.safetyCard3Title}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {t.safetyCard3Desc}
+            </p>
+          </div>
+
+          {/* Card 4 */}
+          <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-error)' }}>
+              <AlertTriangle size={18} />
+              {t.safetyCard4Title}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {t.safetyCard4Desc}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Broadcasting Policy & Anti-Ban Safety Section */}
+      <section className="policy-section" style={{
+        padding: '6rem 5% 6rem 5%',
+        borderBottom: '1px solid var(--color-border)',
+        maxWidth: '1280px',
+        margin: '0 auto'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '700px',
+          margin: '0 auto 4rem auto'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.2)',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            color: '#3b82f6',
+            marginBottom: '1rem'
+          }}>
+            <Shield size={13} />
+            <span>Official Anti-Ban & Safety Policy</span>
+          </div>
+          <h2 style={{
+            fontSize: '2.25rem',
+            fontWeight: 800,
+            marginBottom: '1rem',
+            letterSpacing: '-0.5px'
+          }}>
+            {t.policyTitle}
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            {t.policySubtitle}
+          </p>
+        </div>
+
+        <div className="policy-content-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: '1.1fr 0.9fr',
+          gap: '3rem',
+          alignItems: 'start'
+        }}>
+          {/* Left Side: Policy & 500-contacts explanation card */}
+          <div className="glass-card policy-highlight-card" style={{
+            padding: '2.5rem',
+            border: '1px solid var(--color-border)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
+            background: theme === 'dark' ? 'rgba(8, 12, 22, 0.4)' : 'rgba(255, 255, 255, 0.5)',
+            height: '100%'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                background: 'rgba(245, 158, 11, 0.1)',
+                color: 'var(--color-warning)',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <AlertTriangle size={22} />
+              </div>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0 }}>
+                {t.policyCardTitle}
+              </h3>
+            </div>
+
+            <div style={{
+              fontSize: '1.05rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              lineHeight: 1.4,
+              borderLeft: '3px solid var(--color-warning)',
+              paddingLeft: '1rem',
+              margin: '0.5rem 0'
+            }}>
+              {t.policyCardQuestion}
+            </div>
+
+            <p style={{
+              fontSize: '0.95rem',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: 0
+            }}>
+              {t.policyCardAnswer}
+            </p>
+
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'rgba(16, 185, 129, 0.08)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem'
+            }}>
+              <CheckCircle size={20} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                {lang === 'en' 
+                  ? "Built-in Anti-Ban Safeguard: Mandatory 15-second delivery delay is active by default."
+                  : "બિલ્ટ-ઇન એન્ટી-બેન ગાર્ડ: ફરજિયાત ૧૫-સેકન્ડનો વિલંબ આપમેળે સક્રિય રહે છે."}
+              </span>
+            </div>
+          </div>
+
+          {/* Right Side: Rules checklist */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* Rule 1 */}
+            <div className="glass-card policy-rule-card" style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'start' }}>
+              <div style={{
+                background: 'rgba(6, 182, 212, 0.08)',
+                color: 'var(--accent-teal)',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <CheckCircle size={18} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>{t.policyRule1Title}</h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>{t.policyRule1Desc}</p>
+              </div>
+            </div>
+
+            {/* Rule 2 */}
+            <div className="glass-card policy-rule-card" style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'start' }}>
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.08)',
+                color: 'var(--accent-green)',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Sparkles size={18} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>{t.policyRule2Title}</h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>{t.policyRule2Desc}</p>
+              </div>
+            </div>
+
+            {/* Rule 3 */}
+            <div className="glass-card policy-rule-card" style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'start' }}>
+              <div style={{
+                background: 'rgba(59, 130, 246, 0.08)',
+                color: '#3b82f6',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <FileText size={18} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>{t.policyRule3Title}</h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>{t.policyRule3Desc}</p>
+              </div>
+            </div>
+
+            {/* Rule 4 */}
+            <div className="glass-card policy-rule-card" style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'start' }}>
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.08)',
+                color: 'var(--color-error)',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <MessageSquare size={18} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>{t.policyRule4Title}</h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>{t.policyRule4Desc}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section style={{
         padding: '6rem 5%',
@@ -1295,6 +1637,92 @@ export default function Landing({
             ? '0 20px 40px rgba(16, 185, 129, 0.12)'
             : '0 20px 40px rgba(16, 185, 129, 0.06)'} !important;
           border-color: var(--accent-green) !important;
+        }
+
+        /* Mobile Section Spacing Overrides */
+        @media (max-width: 768px) {
+          section {
+            padding: 2.5rem 1.25rem !important; /* Reduced vertical spacing on mobile */
+          }
+          /* Reduce spacing between Safety & Policy sections even further to make them contiguous */
+          .safety-section {
+            padding-bottom: 1rem !important;
+            border-bottom: none !important; /* Merge visually */
+          }
+          .policy-section {
+            padding-top: 1rem !important;
+            padding-bottom: 1.5rem !important;
+          }
+        }
+
+        /* Safety Grid Layout */
+        .safety-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+        .safety-grid .glass-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .safety-grid .glass-card:hover {
+          transform: translateY(-6px);
+          border-color: var(--color-warning) !important;
+          box-shadow: 0 15px 30px rgba(245, 158, 11, 0.15) !important;
+        }
+        @media (max-width: 768px) {
+          .safety-grid {
+            grid-template-columns: 1fr !important;
+            padding: 0 0.5rem;
+          }
+        }
+
+        /* Policy Section Styling & Hover Effects */
+        .policy-content-grid {
+          transition: all 0.4s ease;
+        }
+        .policy-highlight-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .policy-highlight-card:hover {
+          transform: translateY(-6px);
+          border-color: var(--color-warning) !important;
+          box-shadow: ${theme === 'dark' 
+            ? '0 15px 30px rgba(245, 158, 11, 0.2)' 
+            : '0 15px 30px rgba(245, 158, 11, 0.1)'} !important;
+        }
+
+        .policy-rule-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .policy-rule-card:hover {
+          transform: translateY(-4px);
+          border-color: var(--accent-teal) !important;
+          box-shadow: ${theme === 'dark'
+            ? '0 10px 20px rgba(6, 182, 212, 0.15)'
+            : '0 10px 20px rgba(6, 182, 212, 0.06)'} !important;
+        }
+
+        @media (max-width: 900px) {
+          .policy-content-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .policy-rule-card {
+            padding: 1.25rem !important;
+          }
         }
 
         /* FAQ Card Hover Glow */
