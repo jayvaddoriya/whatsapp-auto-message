@@ -285,6 +285,7 @@ export default function Landing({
           <HeaderControls lang={lang} theme={theme} toggleLang={toggleLang} toggleTheme={toggleTheme} />
           
           <button 
+            id="landing-nav-access-dashboard"
             onClick={onAccessDashboard}
             className="btn btn-secondary landing-nav-btn"
             style={{
@@ -343,6 +344,7 @@ export default function Landing({
 
           <div className="hero-buttons animate-fade-in-up delay-300" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <a 
+              id="hero-book-demo"
               href={demoUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -365,6 +367,7 @@ export default function Landing({
             </a>
 
             <button 
+              id="hero-access-dashboard"
               onClick={onAccessDashboard}
               className="btn btn-secondary"
               style={{
@@ -1248,6 +1251,7 @@ export default function Landing({
             return (
               <div 
                 key={index} 
+                id={`faq-card-${index}`}
                 className="glass-card faq-card" 
                 style={{ 
                   border: isOpen ? '1px solid var(--accent-teal)' : '1px solid var(--color-border)'
@@ -1327,6 +1331,7 @@ export default function Landing({
             width: '100%'
           }}>
             <a 
+              id="cta-whatsapp-chat"
               href={demoUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -1386,6 +1391,7 @@ export default function Landing({
 
       {/* Scroll to Top Button */}
       <button
+        id="scroll-to-top-button"
         onClick={scrollToTop}
         className={`scroll-to-top-btn ${showScrollTop ? 'visible' : ''}`}
         aria-label="Scroll to top"

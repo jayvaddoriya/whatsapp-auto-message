@@ -22,6 +22,7 @@ export function HeaderControls({ lang, theme, toggleLang, toggleTheme }) {
     }}>
       {/* Theme Toggle Button */}
       <button 
+        id="theme-toggle"
         onClick={toggleTheme} 
         className="header-control-btn"
         title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -34,6 +35,7 @@ export function HeaderControls({ lang, theme, toggleLang, toggleTheme }) {
 
       {/* Language Toggle Button */}
       <button 
+        id="language-toggle"
         onClick={toggleLang}
         className="header-control-btn-lang"
         title="Toggle Language / ભાષા બદલો"
