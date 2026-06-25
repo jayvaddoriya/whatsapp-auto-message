@@ -3,7 +3,7 @@ const CustomBroadcastNumber = require('../models/CustomBroadcastNumber');
 
 // GET /api/custom-broadcasts
 const list = async (req, res) => {
-  const { search } = req.query;
+  const { search, page, limit } = req.query;
 
   try {
     let query = { admin_id: req.user.id };
@@ -11,19 +11,48 @@ const list = async (req, res) => {
       query.name = { $regex: search, $options: 'i' };
     }
 
-    const lists = await CustomBroadcast.find(query).sort({ _id: -1 });
+    if (page || limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const skip = (pageNum - 1) * limitNum;
 
-    // Enrich each list with its phone numbers and recipient count
-    const enrichedLists = [];
-    for (const list of lists) {
-      const numbers = await CustomBroadcastNumber.find({ broadcast_id: list._id });
-      const listObj = list.toJSON();
-      listObj.recipient_count = numbers.length;
-      listObj.numbers = numbers.map(n => n.phone_number);
-      enrichedLists.push(listObj);
+      const totalCount = await CustomBroadcast.countDocuments(query);
+      const totalPages = Math.ceil(totalCount / limitNum);
+      const lists = await CustomBroadcast.find(query)
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limitNum);
+
+      const enrichedLists = [];
+      for (const list of lists) {
+        const numbers = await CustomBroadcastNumber.find({ broadcast_id: list._id });
+        const listObj = list.toJSON();
+        listObj.recipient_count = numbers.length;
+        listObj.numbers = numbers.map(n => n.phone_number);
+        enrichedLists.push(listObj);
+      }
+
+      return res.json({
+        data: enrichedLists,
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: pageNum,
+          limit: limitNum
+        }
+      });
+    } else {
+      const lists = await CustomBroadcast.find(query).sort({ _id: -1 });
+      const enrichedLists = [];
+      for (const list of lists) {
+        const numbers = await CustomBroadcastNumber.find({ broadcast_id: list._id });
+        const listObj = list.toJSON();
+        listObj.recipient_count = numbers.length;
+        listObj.numbers = numbers.map(n => n.phone_number);
+        enrichedLists.push(listObj);
+      }
+      return res.json(enrichedLists);
     }
-
-    res.json(enrichedLists);
   } catch (err) {
     console.error('Fetch custom broadcasts error:', err);
     res.status(500).json({ error: 'Failed to fetch custom broadcasts.' });

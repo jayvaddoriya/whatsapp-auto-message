@@ -15,6 +15,15 @@ export default function SuperDashboard({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
+  // Metrics state
+  const [metrics, setMetrics] = useState({ total: 0, active: 0, suspended: 0 });
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -30,19 +39,46 @@ export default function SuperDashboard({
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch all admins
-  const fetchAdmins = async (search = '') => {
+  // Fetch metrics (unpaginated)
+  const fetchMetrics = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/super/admins`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (response.ok && Array.isArray(data)) {
+        const total = data.filter(a => a.role === 'admin').length;
+        const active = data.filter(a => a.role === 'admin' && a.enabled).length;
+        const suspended = total - active;
+        setMetrics({ total, active, suspended });
+      }
+    } catch (err) {
+      console.error('Fetch metrics error:', err);
+    }
+  };
+
+  // Fetch paginated admins
+  const fetchAdmins = async (search = searchQuery, pageNum = page, limitNum = limit) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE}/api/super/admins?search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`${API_BASE}/api/super/admins?search=${encodeURIComponent(search)}&page=${pageNum}&limit=${limitNum}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch admins.');
-      setAdmins(data);
+      
+      if (data.pagination) {
+        setAdmins(data.data);
+        setTotalPages(data.pagination.totalPages);
+        setTotalCount(data.pagination.totalCount);
+      } else {
+        setAdmins(data);
+        setTotalPages(1);
+        setTotalCount(data.length);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,11 +89,16 @@ export default function SuperDashboard({
   // Debounced search trigger
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchAdmins(searchQuery);
+      fetchAdmins(searchQuery, page, limit);
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery, token]);
+  }, [searchQuery, page, limit, token]);
+
+  // Initial load for metrics
+  useEffect(() => {
+    fetchMetrics();
+  }, [token]);
 
   // Handle Form Change
   const handleInputChange = (e) => {
@@ -94,7 +135,8 @@ export default function SuperDashboard({
       if (!response.ok) throw new Error(data.error || 'Failed to create admin.');
       
       setShowCreateModal(false);
-      fetchAdmins();
+      fetchAdmins(searchQuery, page, limit);
+      fetchMetrics();
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -144,7 +186,8 @@ export default function SuperDashboard({
 
       setShowEditModal(false);
       setEditingAdmin(null);
-      fetchAdmins();
+      fetchAdmins(searchQuery, page, limit);
+      fetchMetrics();
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -170,7 +213,8 @@ export default function SuperDashboard({
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update status.');
-      fetchAdmins();
+      fetchAdmins(searchQuery, page, limit);
+      fetchMetrics();
     } catch (err) {
       alert(`Error toggling status: ${err.message}`);
     }
@@ -191,16 +235,17 @@ export default function SuperDashboard({
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to delete admin.');
-      fetchAdmins();
+      fetchAdmins(searchQuery, page, limit);
+      fetchMetrics();
     } catch (err) {
       alert(`Error deleting admin: ${err.message}`);
     }
   };
 
   // Calculate Metrics
-  const totalAdmins = admins.filter(a => a.role === 'admin').length;
-  const enabledAdmins = admins.filter(a => a.role === 'admin' && a.enabled).length;
-  const disabledAdmins = totalAdmins - enabledAdmins;
+  const totalAdmins = metrics.total;
+  const enabledAdmins = metrics.active;
+  const disabledAdmins = metrics.suspended;
 
   return (
     <div className="app-container">
@@ -340,7 +385,10 @@ export default function SuperDashboard({
             className="form-input"
             placeholder={t('searchAdmins')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
             style={{ paddingLeft: '2.5rem' }}
           />
           <span style={{
@@ -454,6 +502,95 @@ export default function SuperDashboard({
                   ))}
                 </tbody>
               </table>
+
+              {/* Pagination Controls */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: '1.5rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid var(--color-border)',
+                flexWrap: 'wrap',
+                gap: '1rem'
+              }} className="pagination-container">
+                {/* Left: Total Info */}
+                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                  {lang === 'en' ? `Showing ${admins.length} of ${totalCount} entries` : `કુલ ${totalCount} માંથી ${admins.length} દર્શાવેલ છે`}
+                </div>
+
+                {/* Right: Controls & Page Info */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  {/* Page Size Selector */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
+                    </span>
+                    <select
+                      value={limit}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setLimit(val);
+                        setPage(1);
+                      }}
+                      style={{
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '6px',
+                        color: 'var(--text-primary)',
+                        padding: '0.25rem 0.5rem',
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        outline: 'none'
+                      }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
+
+                  {/* Page Numbers Navigation */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <button
+                      onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                      disabled={page === 1}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '0.35rem 0.75rem',
+                        fontSize: '0.8rem',
+                        borderRadius: '6px',
+                        height: 'auto',
+                        borderWidth: '1px',
+                        opacity: page === 1 ? 0.5 : 1,
+                        cursor: page === 1 ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {lang === 'en' ? 'Previous' : 'પાછળ'}
+                    </button>
+                    <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                      {lang === 'en' ? `Page ${page} of ${totalPages}` : `પાનું ${page} / ${totalPages}`}
+                    </span>
+                    <button
+                      onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={page === totalPages || totalPages === 0}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '0.35rem 0.75rem',
+                        fontSize: '0.8rem',
+                        borderRadius: '6px',
+                        height: 'auto',
+                        borderWidth: '1px',
+                        opacity: (page === totalPages || totalPages === 0) ? 0.5 : 1,
+                        cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {lang === 'en' ? 'Next' : 'આગળ'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

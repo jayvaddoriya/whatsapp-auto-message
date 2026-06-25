@@ -4,7 +4,7 @@ const { calculateNextRun } = require('../services/scheduler');
 
 // GET /api/schedules
 const list = async (req, res) => {
-  const { search } = req.query;
+  const { search, page, limit } = req.query;
 
   try {
     let query = { admin_id: req.user.id };
@@ -14,12 +14,34 @@ const list = async (req, res) => {
         { broadcast_jid: { $regex: search, $options: 'i' } },
         { message: { $regex: search, $options: 'i' } }
       ];
-      // Combine admin_id filter with search
       query = { admin_id: req.user.id, ...query };
     }
 
-    const schedulesList = await Schedule.find(query).sort({ _id: -1 });
-    res.json(schedulesList);
+    if (page || limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const skip = (pageNum - 1) * limitNum;
+
+      const totalCount = await Schedule.countDocuments(query);
+      const totalPages = Math.ceil(totalCount / limitNum);
+      const schedulesList = await Schedule.find(query)
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limitNum);
+
+      return res.json({
+        data: schedulesList,
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: pageNum,
+          limit: limitNum
+        }
+      });
+    } else {
+      const schedulesList = await Schedule.find(query).sort({ _id: -1 });
+      return res.json(schedulesList);
+    }
   } catch (err) {
     console.error('Get schedules error:', err);
     res.status(500).json({ error: 'Failed to retrieve schedules.' });

@@ -52,6 +52,18 @@ export default function AdminDashboard({
   const [loadingSchedules, setLoadingSchedules] = useState(true);
   const [schedulesError, setSchedulesError] = useState('');
 
+  // Custom Lists Pagination State
+  const [customListsPage, setCustomListsPage] = useState(1);
+  const [customListsLimit, setCustomListsLimit] = useState(10);
+  const [customListsTotalPages, setCustomListsTotalPages] = useState(1);
+  const [customListsTotalCount, setCustomListsTotalCount] = useState(0);
+
+  // Schedules Pagination State
+  const [schedulesPage, setSchedulesPage] = useState(1);
+  const [schedulesLimit, setSchedulesLimit] = useState(10);
+  const [schedulesTotalPages, setSchedulesTotalPages] = useState(1);
+  const [schedulesTotalCount, setSchedulesTotalCount] = useState(0);
+
   // Schedule Form State
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [formFields, setFormFields] = useState({
@@ -154,16 +166,24 @@ export default function AdminDashboard({
 
   // Fetch detailed custom broadcast lists
   const [fetchingCustomListsInProgress, setFetchingCustomListsInProgress] = useState(false);
-  const fetchCustomLists = async (search = '') => {
+  const fetchCustomLists = async (search = customListSearch, page = customListsPage, limit = customListsLimit) => {
     setLoadingCustom(true);
     setCustomError('');
     try {
-      const response = await fetch(`${API_BASE}/api/custom-broadcasts?search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`${API_BASE}/api/custom-broadcasts?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch custom lists.');
-      setCustomLists(data);
+      if (data.pagination) {
+        setCustomLists(data.data);
+        setCustomListsTotalPages(data.pagination.totalPages);
+        setCustomListsTotalCount(data.pagination.totalCount);
+      } else {
+        setCustomLists(data);
+        setCustomListsTotalPages(1);
+        setCustomListsTotalCount(data.length);
+      }
     } catch (err) {
       setCustomError(err.message);
     } finally {
@@ -405,16 +425,24 @@ export default function AdminDashboard({
   };
 
   // Fetch schedules
-  const fetchSchedules = async (search = '') => {
+  const fetchSchedules = async (search = scheduleSearch, page = schedulesPage, limit = schedulesLimit) => {
     setLoadingSchedules(true);
     setSchedulesError('');
     try {
-      const response = await fetch(`${API_BASE}/api/schedules?search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`${API_BASE}/api/schedules?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch schedules.');
-      setSchedules(data);
+      if (data.pagination) {
+        setSchedules(data.data);
+        setSchedulesTotalPages(data.pagination.totalPages);
+        setSchedulesTotalCount(data.pagination.totalCount);
+      } else {
+        setSchedules(data);
+        setSchedulesTotalPages(1);
+        setSchedulesTotalCount(data.length);
+      }
     } catch (err) {
       setSchedulesError(err.message);
     } finally {
@@ -440,20 +468,20 @@ export default function AdminDashboard({
   // Debounced search trigger for Schedules
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchSchedules(scheduleSearch);
+      fetchSchedules(scheduleSearch, schedulesPage, schedulesLimit);
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [scheduleSearch, token]);
+  }, [scheduleSearch, schedulesPage, schedulesLimit, token]);
 
   // Debounced search trigger for Custom Lists
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchCustomLists(customListSearch);
+      fetchCustomLists(customListSearch, customListsPage, customListsLimit);
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [customListSearch, token]);
+  }, [customListSearch, customListsPage, customListsLimit, token]);
 
   // Fetch broadcast lists and contacts when WhatsApp transitions to connected
   useEffect(() => {
@@ -1083,7 +1111,10 @@ export default function AdminDashboard({
                   className="form-input"
                   placeholder={t('searchCustomLists')}
                   value={customListSearch}
-                  onChange={(e) => setCustomListSearch(e.target.value)}
+                  onChange={(e) => {
+                    setCustomListSearch(e.target.value);
+                    setCustomListsPage(1);
+                  }}
                   style={{ paddingLeft: '2.5rem' }}
                 />
                 <span style={{
@@ -1179,6 +1210,95 @@ export default function AdminDashboard({
                         ))}
                       </tbody>
                     </table>
+
+                    {/* Pagination Controls */}
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: '1.5rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid var(--color-border)',
+                      flexWrap: 'wrap',
+                      gap: '1rem'
+                    }} className="pagination-container">
+                      {/* Left: Total Info */}
+                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                        {lang === 'en' ? `Showing ${customLists.length} of ${customListsTotalCount} entries` : `કુલ ${customListsTotalCount} માંથી ${customLists.length} દર્શાવેલ છે`}
+                      </div>
+
+                      {/* Right: Controls & Page Info */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                        {/* Page Size Selector */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
+                          </span>
+                          <select
+                            value={customListsLimit}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              setCustomListsLimit(val);
+                              setCustomListsPage(1);
+                            }}
+                            style={{
+                              background: 'var(--bg-card)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: '6px',
+                              color: 'var(--text-primary)',
+                              padding: '0.25rem 0.5rem',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}
+                          >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                          </select>
+                        </div>
+
+                        {/* Page Numbers Navigation */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <button
+                            onClick={() => setCustomListsPage(prev => Math.max(prev - 1, 1))}
+                            disabled={customListsPage === 1}
+                            className="btn btn-secondary"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.8rem',
+                              borderRadius: '6px',
+                              height: 'auto',
+                              borderWidth: '1px',
+                              opacity: customListsPage === 1 ? 0.5 : 1,
+                              cursor: customListsPage === 1 ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            {lang === 'en' ? 'Previous' : 'પાછળ'}
+                          </button>
+                          <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                            {lang === 'en' ? `Page ${customListsPage} of ${customListsTotalPages}` : `પાનું ${customListsPage} / ${customListsTotalPages}`}
+                          </span>
+                          <button
+                            onClick={() => setCustomListsPage(prev => Math.min(prev + 1, customListsTotalPages))}
+                            disabled={customListsPage === customListsTotalPages || customListsTotalPages === 0}
+                            className="btn btn-secondary"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.8rem',
+                              borderRadius: '6px',
+                              height: 'auto',
+                              borderWidth: '1px',
+                              opacity: (customListsPage === customListsTotalPages || customListsTotalPages === 0) ? 0.5 : 1,
+                              cursor: (customListsPage === customListsTotalPages || customListsTotalPages === 0) ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            {lang === 'en' ? 'Next' : 'આગળ'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1457,7 +1577,10 @@ export default function AdminDashboard({
                   className="form-input"
                   placeholder={t('searchSchedules')}
                   value={scheduleSearch}
-                  onChange={(e) => setScheduleSearch(e.target.value)}
+                  onChange={(e) => {
+                    setScheduleSearch(e.target.value);
+                    setSchedulesPage(1);
+                  }}
                   style={{ paddingLeft: '2.5rem' }}
                 />
                 <span style={{
@@ -1612,6 +1735,95 @@ export default function AdminDashboard({
                         ))}
                       </tbody>
                     </table>
+
+                    {/* Pagination Controls */}
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: '1.5rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid var(--color-border)',
+                      flexWrap: 'wrap',
+                      gap: '1rem'
+                    }} className="pagination-container">
+                      {/* Left: Total Info */}
+                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                        {lang === 'en' ? `Showing ${schedules.length} of ${schedulesTotalCount} entries` : `કુલ ${schedulesTotalCount} માંથી ${schedules.length} દર્શાવેલ છે`}
+                      </div>
+
+                      {/* Right: Controls & Page Info */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                        {/* Page Size Selector */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
+                          </span>
+                          <select
+                            value={schedulesLimit}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              setSchedulesLimit(val);
+                              setSchedulesPage(1);
+                            }}
+                            style={{
+                              background: 'var(--bg-card)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: '6px',
+                              color: 'var(--text-primary)',
+                              padding: '0.25rem 0.5rem',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}
+                          >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                          </select>
+                        </div>
+
+                        {/* Page Numbers Navigation */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <button
+                            onClick={() => setSchedulesPage(prev => Math.max(prev - 1, 1))}
+                            disabled={schedulesPage === 1}
+                            className="btn btn-secondary"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.8rem',
+                              borderRadius: '6px',
+                              height: 'auto',
+                              borderWidth: '1px',
+                              opacity: schedulesPage === 1 ? 0.5 : 1,
+                              cursor: schedulesPage === 1 ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            {lang === 'en' ? 'Previous' : 'પાછળ'}
+                          </button>
+                          <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                            {lang === 'en' ? `Page ${schedulesPage} of ${schedulesTotalPages}` : `પાનું ${schedulesPage} / ${schedulesTotalPages}`}
+                          </span>
+                          <button
+                            onClick={() => setSchedulesPage(prev => Math.min(prev + 1, schedulesTotalPages))}
+                            disabled={schedulesPage === schedulesTotalPages || schedulesTotalPages === 0}
+                            className="btn btn-secondary"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.8rem',
+                              borderRadius: '6px',
+                              height: 'auto',
+                              borderWidth: '1px',
+                              opacity: (schedulesPage === schedulesTotalPages || schedulesTotalPages === 0) ? 0.5 : 1,
+                              cursor: (schedulesPage === schedulesTotalPages || schedulesTotalPages === 0) ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            {lang === 'en' ? 'Next' : 'આગળ'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

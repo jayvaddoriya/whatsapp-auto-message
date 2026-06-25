@@ -4,7 +4,7 @@ const whatsappService = require('../services/whatsapp');
 
 // GET /api/super/admins
 const listAdmins = async (req, res) => {
-  const { search } = req.query;
+  const { search, page, limit } = req.query;
 
   try {
     let query = {};
@@ -17,8 +17,32 @@ const listAdmins = async (req, res) => {
       };
     }
 
-    const adminsList = await Admin.find(query).select('-password').sort({ _id: -1 });
-    res.json(adminsList);
+    if (page || limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const skip = (pageNum - 1) * limitNum;
+
+      const totalCount = await Admin.countDocuments(query);
+      const totalPages = Math.ceil(totalCount / limitNum);
+      const adminsList = await Admin.find(query)
+        .select('-password')
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limitNum);
+
+      return res.json({
+        data: adminsList,
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: pageNum,
+          limit: limitNum
+        }
+      });
+    } else {
+      const adminsList = await Admin.find(query).select('-password').sort({ _id: -1 });
+      return res.json(adminsList);
+    }
   } catch (err) {
     console.error('List admins error:', err);
     res.status(500).json({ error: 'Failed to retrieve admins.' });
