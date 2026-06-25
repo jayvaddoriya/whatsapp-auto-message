@@ -1022,19 +1022,27 @@ export default function AdminDashboard({
                     <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       {lang === 'en' ? 'Import from Excel / CSV (Optional)' : 'એક્સેલ / CSV માંથી આયાત કરો (વૈકલ્પિક)'}
                     </label>
-                    <input
-                      type="file"
-                      ref={excelInputRef}
-                      accept=".xlsx,.xls,.csv"
-                      onChange={handleExcelImport}
-                      className="form-input"
-                      style={{ fontSize: '0.85rem', padding: '0.5rem' }}
-                    />
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.25rem' }}>
-                      {lang === 'en' 
-                        ? 'Select an Excel (.xlsx, .xls) or CSV file. All valid numbers will be extracted.' 
-                        : 'એક્સેલ (.xlsx, .xls) અથવા CSV ફાઇલ પસંદ કરો. બધા માન્ય નંબરો આપમેળે ખેંચવામાં આવશે.'}
-                    </span>
+                    <div 
+                      onClick={() => excelInputRef.current?.click()}
+                      className="custom-file-upload"
+                    >
+                      <input
+                        type="file"
+                        ref={excelInputRef}
+                        accept=".xlsx,.xls,.csv"
+                        onChange={handleExcelImport}
+                        style={{ display: 'none' }}
+                      />
+                      <div className="custom-file-upload-icon">📊</div>
+                      <div className="custom-file-upload-title">
+                        {lang === 'en' ? 'Click to import Excel / CSV' : 'એક્સેલ / CSV આયાત કરવા માટે ક્લિક કરો'}
+                      </div>
+                      <div className="custom-file-upload-subtitle">
+                        {lang === 'en' 
+                          ? 'Select an Excel (.xlsx, .xls) or CSV file. All valid numbers will be extracted.' 
+                          : 'એક્સેલ (.xlsx, .xls) અથવા CSV ફાઇલ પસંદ કરો. બધા માન્ય નંબરો આપમેળે ખેંચવામાં આવશે.'}
+                      </div>
+                    </div>
                     {excelImportStatus && (
                       <div style={{
                         marginTop: '0.5rem',
@@ -1212,26 +1220,17 @@ export default function AdminDashboard({
                     </table>
 
                     {/* Pagination Controls */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '1.5rem',
-                      paddingTop: '1rem',
-                      borderTop: '1px solid var(--color-border)',
-                      flexWrap: 'wrap',
-                      gap: '1rem'
-                    }} className="pagination-container">
+                    <div className="pagination-container">
                       {/* Left: Total Info */}
-                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                      <div className="pagination-info">
                         {lang === 'en' ? `Showing ${customLists.length} of ${customListsTotalCount} entries` : `કુલ ${customListsTotalCount} માંથી ${customLists.length} દર્શાવેલ છે`}
                       </div>
 
                       {/* Right: Controls & Page Info */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                      <div className="pagination-controls">
                         {/* Page Size Selector */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <div className="pagination-limit-wrapper">
+                          <span className="pagination-limit-label">
                             {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
                           </span>
                           <select
@@ -1241,16 +1240,7 @@ export default function AdminDashboard({
                               setCustomListsLimit(val);
                               setCustomListsPage(1);
                             }}
-                            style={{
-                              background: 'var(--bg-card)',
-                              border: '1px solid var(--color-border)',
-                              borderRadius: '6px',
-                              color: 'var(--text-primary)',
-                              padding: '0.25rem 0.5rem',
-                              fontSize: '0.85rem',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
+                            className="pagination-limit-select"
                           >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
@@ -1260,41 +1250,41 @@ export default function AdminDashboard({
                         </div>
 
                         {/* Page Numbers Navigation */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div className="pagination-pages">
                           <button
                             onClick={() => setCustomListsPage(prev => Math.max(prev - 1, 1))}
                             disabled={customListsPage === 1}
-                            className="btn btn-secondary"
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              borderRadius: '6px',
-                              height: 'auto',
-                              borderWidth: '1px',
-                              opacity: customListsPage === 1 ? 0.5 : 1,
-                              cursor: customListsPage === 1 ? 'not-allowed' : 'pointer'
-                            }}
+                            className="pagination-btn"
+                            title={lang === 'en' ? 'Previous Page' : 'પાછલું પાનું'}
                           >
-                            {lang === 'en' ? 'Previous' : 'પાછળ'}
+                            ‹
                           </button>
-                          <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                            {lang === 'en' ? `Page ${customListsPage} of ${customListsTotalPages}` : `પાનું ${customListsPage} / ${customListsTotalPages}`}
-                          </span>
+                          
+                          {/* Render Page Numbers dynamically */}
+                          {Array.from({ length: customListsTotalPages }, (_, i) => i + 1)
+                            .filter(p => p === 1 || p === customListsTotalPages || Math.abs(p - customListsPage) <= 1)
+                            .map((p, index, arr) => {
+                              const showEllipsisBefore = index > 0 && p - arr[index - 1] > 1;
+                              return (
+                                <React.Fragment key={p}>
+                                  {showEllipsisBefore && <span className="pagination-ellipsis">...</span>}
+                                  <button
+                                    onClick={() => setCustomListsPage(p)}
+                                    className={`pagination-btn ${p === customListsPage ? 'active' : ''}`}
+                                  >
+                                    {p}
+                                  </button>
+                                </React.Fragment>
+                              );
+                            })}
+
                           <button
                             onClick={() => setCustomListsPage(prev => Math.min(prev + 1, customListsTotalPages))}
                             disabled={customListsPage === customListsTotalPages || customListsTotalPages === 0}
-                            className="btn btn-secondary"
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              borderRadius: '6px',
-                              height: 'auto',
-                              borderWidth: '1px',
-                              opacity: (customListsPage === customListsTotalPages || customListsTotalPages === 0) ? 0.5 : 1,
-                              cursor: (customListsPage === customListsTotalPages || customListsTotalPages === 0) ? 'not-allowed' : 'pointer'
-                            }}
+                            className="pagination-btn"
+                            title={lang === 'en' ? 'Next Page' : 'આગલું પાનું'}
                           >
-                            {lang === 'en' ? 'Next' : 'આગળ'}
+                            ›
                           </button>
                         </div>
                       </div>
@@ -1405,17 +1395,25 @@ export default function AdminDashboard({
                     <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       {lang === 'en' ? 'Attach Image or Video (Optional)' : 'ચિત્ર અથવા વિડિઓ જોડો (વૈકલ્પિક)'}
                     </label>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef}
-                      accept="image/*,video/*"
-                      onChange={handleFileChange}
-                      className="form-input"
-                      style={{ fontSize: '0.85rem', padding: '0.5rem' }}
-                    />
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.25rem' }}>
-                      {lang === 'en' ? 'Supported formats: JPG, PNG, GIF, MP4 (Max 15MB)' : 'સપોર્ટેડ ફોર્મેટ: JPG, PNG, GIF, MP4 (મહત્તમ ૧૫MB)'}
-                    </span>
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="custom-file-upload"
+                    >
+                      <input 
+                        type="file" 
+                        ref={fileInputRef}
+                        accept="image/*,video/*"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                      />
+                      <div className="custom-file-upload-icon">📤</div>
+                      <div className="custom-file-upload-title">
+                        {selectedFile ? selectedFile.filename : (lang === 'en' ? 'Click to upload image or video' : 'ચિત્ર અથવા વિડિઓ અપલોડ કરવા ક્લિક કરો')}
+                      </div>
+                      <div className="custom-file-upload-subtitle">
+                        {lang === 'en' ? 'JPG, PNG, GIF, MP4 (Max 15MB)' : 'JPG, PNG, GIF, MP4 (મહત્તમ ૧૫MB)'}
+                      </div>
+                    </div>
 
                     {/* Preview Box */}
                     {selectedFile && selectedFile.data && (
@@ -1737,26 +1735,17 @@ export default function AdminDashboard({
                     </table>
 
                     {/* Pagination Controls */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '1.5rem',
-                      paddingTop: '1rem',
-                      borderTop: '1px solid var(--color-border)',
-                      flexWrap: 'wrap',
-                      gap: '1rem'
-                    }} className="pagination-container">
+                    <div className="pagination-container">
                       {/* Left: Total Info */}
-                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                      <div className="pagination-info">
                         {lang === 'en' ? `Showing ${schedules.length} of ${schedulesTotalCount} entries` : `કુલ ${schedulesTotalCount} માંથી ${schedules.length} દર્શાવેલ છે`}
                       </div>
 
                       {/* Right: Controls & Page Info */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                      <div className="pagination-controls">
                         {/* Page Size Selector */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <div className="pagination-limit-wrapper">
+                          <span className="pagination-limit-label">
                             {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
                           </span>
                           <select
@@ -1766,16 +1755,7 @@ export default function AdminDashboard({
                               setSchedulesLimit(val);
                               setSchedulesPage(1);
                             }}
-                            style={{
-                              background: 'var(--bg-card)',
-                              border: '1px solid var(--color-border)',
-                              borderRadius: '6px',
-                              color: 'var(--text-primary)',
-                              padding: '0.25rem 0.5rem',
-                              fontSize: '0.85rem',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
+                            className="pagination-limit-select"
                           >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
@@ -1785,41 +1765,41 @@ export default function AdminDashboard({
                         </div>
 
                         {/* Page Numbers Navigation */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div className="pagination-pages">
                           <button
                             onClick={() => setSchedulesPage(prev => Math.max(prev - 1, 1))}
                             disabled={schedulesPage === 1}
-                            className="btn btn-secondary"
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              borderRadius: '6px',
-                              height: 'auto',
-                              borderWidth: '1px',
-                              opacity: schedulesPage === 1 ? 0.5 : 1,
-                              cursor: schedulesPage === 1 ? 'not-allowed' : 'pointer'
-                            }}
+                            className="pagination-btn"
+                            title={lang === 'en' ? 'Previous Page' : 'પાછલું પાનું'}
                           >
-                            {lang === 'en' ? 'Previous' : 'પાછળ'}
+                            ‹
                           </button>
-                          <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                            {lang === 'en' ? `Page ${schedulesPage} of ${schedulesTotalPages}` : `પાનું ${schedulesPage} / ${schedulesTotalPages}`}
-                          </span>
+
+                          {/* Render Page Numbers dynamically */}
+                          {Array.from({ length: schedulesTotalPages }, (_, i) => i + 1)
+                            .filter(p => p === 1 || p === schedulesTotalPages || Math.abs(p - schedulesPage) <= 1)
+                            .map((p, index, arr) => {
+                              const showEllipsisBefore = index > 0 && p - arr[index - 1] > 1;
+                              return (
+                                <React.Fragment key={p}>
+                                  {showEllipsisBefore && <span className="pagination-ellipsis">...</span>}
+                                  <button
+                                    onClick={() => setSchedulesPage(p)}
+                                    className={`pagination-btn ${p === schedulesPage ? 'active' : ''}`}
+                                  >
+                                    {p}
+                                  </button>
+                                </React.Fragment>
+                              );
+                            })}
+
                           <button
                             onClick={() => setSchedulesPage(prev => Math.min(prev + 1, schedulesTotalPages))}
                             disabled={schedulesPage === schedulesTotalPages || schedulesTotalPages === 0}
-                            className="btn btn-secondary"
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              borderRadius: '6px',
-                              height: 'auto',
-                              borderWidth: '1px',
-                              opacity: (schedulesPage === schedulesTotalPages || schedulesTotalPages === 0) ? 0.5 : 1,
-                              cursor: (schedulesPage === schedulesTotalPages || schedulesTotalPages === 0) ? 'not-allowed' : 'pointer'
-                            }}
+                            className="pagination-btn"
+                            title={lang === 'en' ? 'Next Page' : 'આગલું પાનું'}
                           >
-                            {lang === 'en' ? 'Next' : 'આગળ'}
+                            ›
                           </button>
                         </div>
                       </div>

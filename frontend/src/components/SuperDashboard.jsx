@@ -504,26 +504,17 @@ export default function SuperDashboard({
               </table>
 
               {/* Pagination Controls */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: '1.5rem',
-                paddingTop: '1rem',
-                borderTop: '1px solid var(--color-border)',
-                flexWrap: 'wrap',
-                gap: '1rem'
-              }} className="pagination-container">
+              <div className="pagination-container">
                 {/* Left: Total Info */}
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                <div className="pagination-info">
                   {lang === 'en' ? `Showing ${admins.length} of ${totalCount} entries` : `કુલ ${totalCount} માંથી ${admins.length} દર્શાવેલ છે`}
                 </div>
 
                 {/* Right: Controls & Page Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <div className="pagination-controls">
                   {/* Page Size Selector */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <div className="pagination-limit-wrapper">
+                    <span className="pagination-limit-label">
                       {lang === 'en' ? 'Show:' : 'દર્શાવો:'}
                     </span>
                     <select
@@ -533,16 +524,7 @@ export default function SuperDashboard({
                         setLimit(val);
                         setPage(1);
                       }}
-                      style={{
-                        background: 'var(--bg-card)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '6px',
-                        color: 'var(--text-primary)',
-                        padding: '0.25rem 0.5rem',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        outline: 'none'
-                      }}
+                      className="pagination-limit-select"
                     >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
@@ -552,41 +534,41 @@ export default function SuperDashboard({
                   </div>
 
                   {/* Page Numbers Navigation */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className="pagination-pages">
                     <button
                       onClick={() => setPage(prev => Math.max(prev - 1, 1))}
                       disabled={page === 1}
-                      className="btn btn-secondary"
-                      style={{
-                        padding: '0.35rem 0.75rem',
-                        fontSize: '0.8rem',
-                        borderRadius: '6px',
-                        height: 'auto',
-                        borderWidth: '1px',
-                        opacity: page === 1 ? 0.5 : 1,
-                        cursor: page === 1 ? 'not-allowed' : 'pointer'
-                      }}
+                      className="pagination-btn"
+                      title={lang === 'en' ? 'Previous Page' : 'પાછલું પાનું'}
                     >
-                      {lang === 'en' ? 'Previous' : 'પાછળ'}
+                      ‹
                     </button>
-                    <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                      {lang === 'en' ? `Page ${page} of ${totalPages}` : `પાનું ${page} / ${totalPages}`}
-                    </span>
+
+                    {/* Render Page Numbers dynamically */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                      .map((p, index, arr) => {
+                        const showEllipsisBefore = index > 0 && p - arr[index - 1] > 1;
+                        return (
+                          <React.Fragment key={p}>
+                            {showEllipsisBefore && <span className="pagination-ellipsis">...</span>}
+                            <button
+                              onClick={() => setPage(p)}
+                              className={`pagination-btn ${p === page ? 'active' : ''}`}
+                            >
+                              {p}
+                            </button>
+                          </React.Fragment>
+                        );
+                      })}
+
                     <button
                       onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={page === totalPages || totalPages === 0}
-                      className="btn btn-secondary"
-                      style={{
-                        padding: '0.35rem 0.75rem',
-                        fontSize: '0.8rem',
-                        borderRadius: '6px',
-                        height: 'auto',
-                        borderWidth: '1px',
-                        opacity: (page === totalPages || totalPages === 0) ? 0.5 : 1,
-                        cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer'
-                      }}
+                      className="pagination-btn"
+                      title={lang === 'en' ? 'Next Page' : 'આગલું પાનું'}
                     >
-                      {lang === 'en' ? 'Next' : 'આગળ'}
+                      ›
                     </button>
                   </div>
                 </div>
