@@ -449,7 +449,7 @@ export default function Landing({
 
       {/* How It Works (Scenario Section) */}
       <section style={{
-        padding: '6rem 5% 6rem 5%',
+        padding: '4rem 5% 4rem 5%',
         borderTop: '1px solid var(--color-border)',
         maxWidth: '1280px',
         margin: '0 auto'
@@ -584,7 +584,7 @@ export default function Landing({
 
       {/* Anti-Ban Timeline Section */}
       <section style={{
-        padding: '6rem 5%',
+        padding: '3.5rem 5%',
         backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.2)' : 'rgba(255, 255, 255, 0.3)',
         borderTop: '1px solid var(--color-border)',
         borderBottom: '1px solid var(--color-border)'
@@ -772,7 +772,7 @@ export default function Landing({
 
       {/* Features Section */}
       <section style={{
-        padding: '6rem 5% 6rem 5%',
+        padding: '4rem 5% 4rem 5%',
         backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.45)',
         borderBottom: '1px solid var(--color-border)'
       }}>
