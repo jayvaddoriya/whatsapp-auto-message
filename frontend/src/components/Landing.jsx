@@ -558,6 +558,57 @@ export default function Landing({
             <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               {t.step2Desc}
             </p>
+            
+            {/* Visual Excel Format Table */}
+            <div style={{
+              marginTop: '1.25rem',
+              background: theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(15, 23, 42, 0.03)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{
+                background: 'var(--bg-table-header)',
+                padding: '0.5rem 0.75rem',
+                borderBottom: '1px solid var(--color-border)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                textAlign: 'left'
+              }}>
+                📊 {lang === 'en' ? 'Excel / CSV Reference Format' : 'એક્સેલ / CSV સંદર્ભ ફોર્મેટ'}
+              </div>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)' }}>
+                    <th style={{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'var(--accent-teal)' }}>
+                      {lang === 'en' ? 'Name' : 'નામ'}
+                    </th>
+                    <th style={{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'var(--accent-teal)' }}>
+                      {lang === 'en' ? 'Phone Number' : 'ફોન નંબર'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-primary)' }}>John Doe</td>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>919876543210</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-primary)' }}>Jane Smith</td>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>919876543211</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-primary)' }}>Raj Patel</td>
+                    <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>919988776655</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="workflow-step-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

@@ -261,6 +261,28 @@ export default function AdminDashboard({
     }
   };
 
+  // Download reference dummy Excel sheet
+  const downloadDummyExcel = () => {
+    try {
+      const data = [
+        { Name: 'John Doe', 'Phone Number': '919876543210' },
+        { Name: 'Jane Smith', 'Phone Number': '919876543211' },
+        { Name: 'Raj Patel', 'Phone Number': '919988776655' }
+      ];
+      
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sample Contacts');
+      
+      // Auto-fit column widths
+      worksheet['!cols'] = [{ wch: 15 }, { wch: 20 }];
+      
+      XLSX.writeFile(workbook, 'whatsapp_broadcast_template.xlsx');
+    } catch (err) {
+      console.error('Failed to download sample excel:', err);
+    }
+  };
+
   // Handle Excel/CSV File Upload & Parsing
   const handleExcelImport = (e) => {
     const file = e.target.files[0];
@@ -1042,6 +1064,37 @@ export default function AdminDashboard({
                           ? 'Select an Excel (.xlsx, .xls) or CSV file. All valid numbers will be extracted.' 
                           : 'એક્સેલ (.xlsx, .xls) અથવા CSV ફાઇલ પસંદ કરો. બધા માન્ય નંબરો આપમેળે ખેંચવામાં આવશે.'}
                       </div>
+                    </div>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      marginTop: '0.5rem',
+                      padding: '0 0.25rem'
+                    }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        {lang === 'en' ? 'Need a template?' : 'ટેમ્પલેટની જરૂર છે?'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={downloadDummyExcel}
+                        className="btn-link"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--accent-teal)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          padding: 0,
+                          textDecoration: 'underline',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem'
+                        }}
+                      >
+                        📥 {lang === 'en' ? 'Download Sample Excel' : 'સેમ્પલ એક્સેલ ડાઉનલોડ કરો'}
+                      </button>
                     </div>
                     {excelImportStatus && (
                       <div style={{
